@@ -1,4 +1,4 @@
-# CapBudget
+# CapBudget 
 
 **CapBudget** est une application web de gestion de budget personnelle. Elle permet de suivre ses revenus et dépenses, de définir des budgets par catégorie, de planifier des objectifs d'épargne et de gérer ses échéances (loyer, factures, abonnements).
 
