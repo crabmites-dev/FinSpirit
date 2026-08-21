@@ -6,7 +6,7 @@ services:
       dockerfile: Dockerfile
     container_name: capbudget_backend
     restart: unless-stopped
-    ports:
+    ports: 
       - "5000:5000"
     env_file:
       - ./backend/.env
