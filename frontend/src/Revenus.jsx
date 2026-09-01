@@ -484,7 +484,18 @@ function Revenus() {
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-emerald-600 cursor-pointer transition-all">
                   <option value="Salaire">💰 Salaire</option>
                   <option value="Freelance">💻 Freelance / SaaS</option>
+                  <option value="Prime">🎁 Prime / Bonus</option>
+                  <option value="Commission">💵 Commission</option>
+                  <option value="Commerce">🛍️ Commerce / Vente</option>
+                  <option value="Business">🏢 Business</option>
+                  <option value="Investissement">📈 Investissements</option>
+                  <option value="Location">🏠 Revenus locatifs</option>
+                  <option value="Vente">💸 Vente d'un bien</option>
                   <option value="Remboursement">🔄 Remboursement</option>
+                  <option value="Bourse">🎓 Bourse d'études</option>
+                  <option value="Allocation">🤝 Allocation / Aide</option>
+                  <option value="Pension">👴 Pension / Retraite</option>
+                  <option value="Cadeau">🎁 Cadeau / Don reçu</option>
                   <option value="Autre">🪙 Autre Revenu</option>
                 </select>
               </div>
