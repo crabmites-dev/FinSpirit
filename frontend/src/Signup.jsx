@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import axios from 'axios';
+import api from './api.js';
 import { User, Mail, Check, X, ArrowRight } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useToast } from './ToastContext.jsx';
@@ -32,9 +32,9 @@ function Signup() {
     }
 
     try {
-      await axios.post('http://localhost:5000/api/auth/register', { username, email, password }, { withCredentials: true });
+      await api.post('/auth/register', { username, email: email.trim().toLowerCase(), password });
       showToast('Compte créé avec succès !', 'success');
-      setTimeout(() => navigate('/login'), 1200);
+      setTimeout(() => navigate('/dashboard'), 1200);
     } catch (err) {
       showToast(err.response?.data?.message || "Erreur lors de l'inscription", 'error');
       setLoading(false);

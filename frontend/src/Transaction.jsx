@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import axios from 'axios';
+import api from './api.js';
 import {
   AreaChart, Area, CartesianGrid, XAxis, YAxis, Tooltip,
   ResponsiveContainer, BarChart, Bar, Cell
@@ -13,6 +13,7 @@ import {
   Layers, Clock, Zap
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useCurrentUser } from './useCurrentUser.js';
 
 // ── Utilitaires ──────────────────────────────────────────────────
 const getGreeting = () => {
@@ -194,13 +195,13 @@ function Transactions() {
   const [page, setPage]             = useState(1);
   const [showFilters, setShowFilters] = useState(false);
   const PER_PAGE = 8;
-  const userName = 'Crabmites';
+  const userName = useCurrentUser();
 
   // ── Fetch ──────────────────────────────────────────────────
   const fetchTx = async () => {
     try {
       setLoading(true);
-      const res = await axios.get('http://localhost:5000/api/transactions', { withCredentials: true });
+      const res = await api.get('/transactions');
       setTx(res.data.transactions || []);
     } catch (e) { console.error(e); }
     finally { setLoading(false); }
@@ -264,9 +265,9 @@ function Transactions() {
   const handleSave = async (data) => {
     try {
       if (editingTx) {
-        await axios.put(`http://localhost:5000/api/transactions/${editingTx.id}`, data, { withCredentials: true });
+        await api.put(`/transactions/${editingTx.id}`, data);
       } else {
-        await axios.post('http://localhost:5000/api/transactions', data, { withCredentials: true });
+        await api.post('/transactions', data);
       }
       setShowModal(false); setEditingTx(null); fetchTx();
     } catch (e) { console.error(e); }
@@ -274,7 +275,7 @@ function Transactions() {
 
   const handleDelete = async (id) => {
     if (!window.confirm('Supprimer cette transaction ?')) return;
-    try { await axios.delete(`http://localhost:5000/api/transactions/${id}`, { withCredentials: true }); fetchTx(); }
+    try { await api.delete(`/transactions/${id}`); fetchTx(); }
     catch (e) { console.error(e); }
   };
 
@@ -285,7 +286,7 @@ function Transactions() {
   };
 
   const handleLogout = async () => {
-    try { await axios.post('http://localhost:5000/api/auth/logout', {}, { withCredentials: true }); navigate('/login'); }
+    try { await api.post('/auth/logout', {}); navigate('/login'); }
     catch (e) { console.error(e); }
   };
 

@@ -1,16 +1,15 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
-import {
-  BarChart, Bar, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell
-} from 'recharts';
+import api from './api.js';
+import {BarChart, Bar, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell} from 'recharts';
 import {
   Search,  PlusCircle, Trash2, ChevronLeft, ChevronRight, AlertCircle,
   ArrowUpRight, X, LayoutDashboard, ReceiptEuro, LogOut, Trophy,
   CircleDollarSign, Bell, Menu, CreditCard, Landmark, CalendarClock, HandCoins, ArrowLeftRight
-} from 'lucide-react';
+} from 'lucide-react'; 
 import { useNavigate } from 'react-router-dom';
 import { useToast } from './ToastContext.jsx';
 import CapBudgetLogo from './CapBudgetLogo.jsx';
+import { useCurrentUser } from './useCurrentUser.js';
 
 const COLORS = ['#4f46e5', '#10b981', '#34d399', '#38bdf8'];
 
@@ -66,6 +65,7 @@ function Revenus() {
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [hasSample, setHasSample] = useState(false);
 
   // Modal ajout
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -80,13 +80,13 @@ function Revenus() {
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 6;
 
-  const userName = 'Crabmites'; // Remplace par ton vrai user plus tard
+  const userName = useCurrentUser();
 
   // ── Fetch ────────────────────────────────────────────────────
   const fetchRevenus = async () => {
     try {
       setLoading(true);
-      const res = await axios.get('http://localhost:5000/api/transactions', { withCredentials: true });
+      const res = await api.get('/transactions');
       const incomeOnly = (res.data.transactions || []).filter(t => t.type === 'income');
       setTransactions(incomeOnly);
     } catch (err) {
@@ -96,7 +96,19 @@ function Revenus() {
     }
   };
 
-  useEffect(() => { fetchRevenus(); }, []);
+  const checkSampleData = async () => {
+    try {
+      const res = await api.get('/auth/sample-data');
+      setHasSample(res.data.hasSample);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => { 
+    fetchRevenus();
+    checkSampleData();
+  }, []);
 
   // ── Total ────────────────────────────────────────────────────
   const totalIncome = transactions.reduce((acc, t) => acc + parseFloat(t.amount), 0);
@@ -104,7 +116,7 @@ function Revenus() {
   // ── Déconnexion ──────────────────────────────────────────────
   const handleLogout = async () => {
     try {
-      await axios.post('http://localhost:5000/api/auth/logout', {}, { withCredentials: true });
+      await api.post('/auth/logout', {});
       navigate('/login');
     } catch (err) {
       console.error('Erreur déconnexion:', err);
@@ -117,9 +129,9 @@ function Revenus() {
     setModalLoading(true);
     setModalError('');
     try {
-      await axios.post('http://localhost:5000/api/transactions', {
+      await api.post('/transactions', {
         title, amount: parseFloat(amount), type: 'income', category, date
-      }, { withCredentials: true });
+      });
       setIsModalOpen(false);
       setTitle('');
       setAmount('');
@@ -139,7 +151,7 @@ function Revenus() {
   const handleDeleteIncome = async (id) => {
     if (!window.confirm('Voulez-vous supprimer ce revenu ?')) return;
     try {
-      await axios.delete(`http://localhost:5000/api/transactions/${id}`, { withCredentials: true });
+      await api.delete(`/transactions/${id}`);
       fetchRevenus();
       showToast('Revenu supprimé', 'success');
     } catch (err) {
@@ -168,7 +180,7 @@ function Revenus() {
     name: cat,
     value: transactions.filter(t => t.category === cat).reduce((s, t) => s + parseFloat(t.amount), 0)
   }));
-  const graphDataToUse = realGraphData.length > 0 ? realGraphData : fakeIncomeGraph;
+  const graphDataToUse = realGraphData.length > 0 ? realGraphData : (hasSample ? fakeIncomeGraph : []);
 
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-slate-50">
@@ -308,22 +320,28 @@ function Revenus() {
                 <p className="text-slate-400 text-[11px] mt-0.5">Visualisation globale de vos sources de gains</p>
               </div>
               <div className="w-full h-[180px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={graphDataToUse} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                    <XAxis dataKey="name" axisLine={false} tickLine={false} stroke="#94a3b8" style={{ fontSize: '11px', fontWeight: 600 }} />
-                    <YAxis axisLine={false} tickLine={false} stroke="#94a3b8" style={{ fontSize: '11px', fontWeight: 600 }} />
-                    <Tooltip
-                      contentStyle={{ backgroundColor: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', fontSize: '12px' }}
-                      formatter={(value) => [`${value.toLocaleString('fr-FR')} FCFA`, 'Total']}
-                    />
-                    <Bar dataKey="value" radius={[6, 6, 0, 0]} barSize={32}>
-                      {graphDataToUse.map((_, index) => (
-                        <Cell key={index} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
+                {graphDataToUse.length === 0 ? (
+                  <div className="flex items-center justify-center h-full">
+                    <p className="text-xs text-slate-400 font-semibold">Aucune donnée à afficher</p>
+                  </div>
+                ) : (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={graphDataToUse} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                      <XAxis dataKey="name" axisLine={false} tickLine={false} stroke="#94a3b8" style={{ fontSize: '11px', fontWeight: 600 }} />
+                      <YAxis axisLine={false} tickLine={false} stroke="#94a3b8" style={{ fontSize: '11px', fontWeight: 600 }} />
+                      <Tooltip
+                        contentStyle={{ backgroundColor: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', fontSize: '12px' }}
+                        formatter={(value) => [`${value.toLocaleString('fr-FR')} FCFA`, 'Total']}
+                      />
+                      <Bar dataKey="value" radius={[6, 6, 0, 0]} barSize={32}>
+                        {graphDataToUse.map((_, index) => (
+                          <Cell key={index} fill={COLORS[index % COLORS.length]} />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                )}
               </div>
             </div>
           </section>

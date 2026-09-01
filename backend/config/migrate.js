@@ -27,8 +27,8 @@ async function addColumnIfMissing(table, column, definition) {
 }
 
 async function migrate() {
-  if (!process.env.DATABASE_URL) {
-    console.error('❌ DATABASE_URL manquant');
+  if (!process.env.DATABASE_URL && !process.env.DB_NAME) {
+    console.error('❌ Config DB manquante (DATABASE_URL ou DB_NAME)');
     process.exit(1);
   }
 

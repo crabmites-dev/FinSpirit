@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from './api.js';
 import {
   PlusCircle, Trash2, X, LayoutDashboard, ReceiptEuro,
   LogOut, CircleDollarSign, Bell, Menu, CreditCard, PiggyBank,
@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from './ToastContext.jsx';
+import { useCurrentUser } from './useCurrentUser.js';
 import CapBudgetLogo from './CapBudgetLogo.jsx';
 
 // ── Utilitaires ──────────────────────────────────────────────────
@@ -211,12 +212,12 @@ function Objectifs() {
   const [selectedGoal, setSelectedGoal] = useState(null);
   const [fundsAmount, setFundsAmount] = useState('');
 
-  const userName = 'Crabmites';
+  const userName = useCurrentUser();
 
   const fetchObjectifs = async () => {
     try {
       setLoading(true);
-      const res = await axios.get('http://localhost:5000/api/objectifs', { withCredentials: true });
+      const res = await api.get('/objectifs');
       setGoals(res.data.objectifs || []);
     } catch (err) {
       console.error(err);
@@ -265,9 +266,9 @@ function Objectifs() {
     };
     try {
       if (editingGoal) {
-        await axios.put(`http://localhost:5000/api/objectifs/${editingGoal.id}`, payload, { withCredentials: true });
+        await api.put(`/objectifs/${editingGoal.id}`, payload);
       } else {
-        await axios.post('http://localhost:5000/api/objectifs', payload, { withCredentials: true });
+        await api.post('/objectifs', payload);
       }
       setIsModalOpen(false);
       fetchObjectifs();
@@ -281,7 +282,7 @@ function Objectifs() {
   const handleDelete = async (id) => {
     if (!window.confirm('Supprimer cet objectif ?')) return;
     try {
-      await axios.delete(`http://localhost:5000/api/objectifs/${id}`, { withCredentials: true });
+      await api.delete(`/objectifs/${id}`);
       fetchObjectifs();
       showToast('Objectif supprimé', 'success');
     } catch (err) {
@@ -302,7 +303,7 @@ function Objectifs() {
     const amount = parseFloat(fundsAmount);
     if (!amount || amount <= 0) return;
     try {
-      await axios.patch(`http://localhost:5000/api/objectifs/${selectedGoal.id}/funds`, { amount }, { withCredentials: true });
+      await api.patch(`/objectifs/${selectedGoal.id}/funds`, { amount });
       setIsFundsModalOpen(false);
       fetchObjectifs();
       showToast('Fonds ajoutés à l\'objectif', 'success');
@@ -315,7 +316,7 @@ function Objectifs() {
   // ── Déconnexion ────────────────────────────────────────────────
   const handleLogout = async () => {
     try {
-      await axios.post('http://localhost:5000/api/auth/logout', {}, { withCredentials: true });
+      await api.post('/auth/logout', {});
       navigate('/login');
     } catch (err) { console.error(err); }
   };

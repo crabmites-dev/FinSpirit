@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
-import axios from 'axios';
+import api from './api.js';
 import { Mail, KeyRound, Check, X, ArrowLeft, RefreshCw, ShieldCheck } from 'lucide-react';
 import { useToast } from './ToastContext.jsx';
 import { FormBrandHeader } from './CapBudgetLogo.jsx';
@@ -38,7 +38,7 @@ function ResetPassword() {
     }
     setResending(true);
     try {
-      await axios.post('http://localhost:5000/api/auth/forgotPassword', { email }, { withCredentials: true });
+      await api.post('/auth/forgotPassword', { email });
       showToast('Un nouveau code a été envoyé', 'success');
       setCode('');
     } catch (err) {
@@ -71,7 +71,7 @@ function ResetPassword() {
     }
 
     try {
-      await axios.post('http://localhost:5000/api/auth/resetPassword', {
+      await api.post('/auth/resetPassword', {
         email,
         code: code.trim(),
         newPassword,

@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useState, useEffect, useMemo } from 'react';
+import api from './api.js';
 import {
   AreaChart, Area, CartesianGrid, XAxis, YAxis,
   Tooltip, ResponsiveContainer, PieChart, Pie, Cell
@@ -13,7 +13,8 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from './ToastContext.jsx';
-import CapBudgetLogo from './CapBudgetLogo.jsx'; 
+import CapBudgetLogo from './CapBudgetLogo.jsx';
+import { useCurrentUser } from './useCurrentUser.js';
 
 const trendDataFake = [
   { date: 'Jan', income: 4400, expense: 2400 },
@@ -38,7 +39,74 @@ const pieDataFake = [
   { name: 'Autres', value: 65 },
 ];
 
-const PIE_COLORS = ['#6366f1', '#f97316', '#10b981', '#f59e0b', '#8b5cf6']; 
+const PIE_COLORS = ['#6366f1', '#f97316', '#10b981', '#f59e0b', '#8b5cf6'];
+
+const MONTHS = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
+
+const PERIOD_SUBTITLES = {
+  '3M': 'Revenus vs dépenses — 3 derniers mois',
+  'Mensuel': 'Revenus vs dépenses — année en cours',
+  'Annuel': 'Revenus vs dépenses par année',
+};
+
+function buildTrendData(transactions, period) {
+  const now = new Date();
+  const year = now.getFullYear();
+
+  if (period === 'Annuel') {
+    const years = [...new Set(transactions.map(t => new Date(t.date).getFullYear()))].sort();
+    const range = years.length > 0 ? years : [year - 2, year - 1, year];
+    return range.map((y) => {
+      const yearTx = transactions.filter(t => new Date(t.date).getFullYear() === y);
+      return {
+        date: String(y),
+        income: yearTx.filter(t => t.type === 'income').reduce((s, t) => s + parseFloat(t.amount), 0),
+        expense: yearTx.filter(t => t.type === 'expense').reduce((s, t) => s + parseFloat(t.amount), 0),
+      };
+    });
+  }
+
+  if (period === '3M') {
+    return Array.from({ length: 3 }, (_, idx) => {
+      const d = new Date(now.getFullYear(), now.getMonth() - (2 - idx), 1);
+      const m = d.getMonth();
+      const y = d.getFullYear();
+      const monthTx = transactions.filter(t => {
+        const td = new Date(t.date);
+        return td.getMonth() === m && td.getFullYear() === y;
+      });
+      return {
+        date: MONTHS[m],
+        income: monthTx.filter(t => t.type === 'income').reduce((s, t) => s + parseFloat(t.amount), 0),
+        expense: monthTx.filter(t => t.type === 'expense').reduce((s, t) => s + parseFloat(t.amount), 0),
+      };
+    });
+  }
+
+  return MONTHS.map((name, i) => {
+    const monthTx = transactions.filter(t => {
+      const td = new Date(t.date);
+      return td.getMonth() === i && td.getFullYear() === year;
+    });
+    return {
+      date: name,
+      income: monthTx.filter(t => t.type === 'income').reduce((s, t) => s + parseFloat(t.amount), 0),
+      expense: monthTx.filter(t => t.type === 'expense').reduce((s, t) => s + parseFloat(t.amount), 0),
+    };
+  });
+}
+
+function getFakeTrendData(period) {
+  if (period === '3M') return trendDataFake.slice(-3);
+  if (period === 'Annuel') {
+    return [
+      { date: '2024', income: 4800000, expense: 3200000 },
+      { date: '2025', income: 5200000, expense: 4100000 },
+      { date: '2026', income: 570000, expense: 80500 },
+    ];
+  }
+  return trendDataFake;
+}
 
 const getGreeting = () => {
   const h = new Date().getHours();
@@ -90,7 +158,7 @@ function SampleDataBanner({ onDismiss }) {
 
     setLoading(true);
     try {
-      await axios.delete('http://localhost:5000/api/auth/sample-data', { withCredentials: true });
+      await api.delete('/auth/sample-data');
       onDismiss();
       showToast('Données d\'exemple supprimées', 'success');
     } catch (err) {
@@ -102,12 +170,12 @@ function SampleDataBanner({ onDismiss }) {
   };
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-amber-50 border border-amber-200 rounded-2xl px-5 py-4">
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-amber-50 border border-yellow-400 rounded-2xl px-5 py-4">
       <div className="flex items-center gap-3">
         <span className="text-xl">💡</span>
         <div>
-          <p className="text-sm font-black text-amber-900">Vous consultez des données d'exemple</p>
-          <p className="text-xs text-amber-700 mt-0.5">
+          <p className="text-sm font-black text-yellow-500">Vous consultez des données d'exemple</p>
+          <p className="text-xs text-yellow-500 mt-0.5">
             Ces données fictives vous permettent de découvrir l'application. Supprimez-les quand vous êtes prêt à saisir les vôtres.
           </p>
         </div>
@@ -115,7 +183,7 @@ function SampleDataBanner({ onDismiss }) {
       <button
         onClick={handleDelete}
         disabled={loading}
-        className="shrink-0 flex items-center gap-2 px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white rounded-xl text-xs font-black cursor-pointer transition-all shadow-sm disabled:opacity-60"
+        className="shrink-0 flex items-center gap-2 px-4 py-2 bg-yellow-500 hover:bg-yellow-300 text-white rounded-xl text-xs font-black cursor-pointer transition-all shadow-sm disabled:opacity-60"
       >
         {loading
           ? <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -142,11 +210,11 @@ function Dashboard() {
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 8;
   const [hasSample, setHasSample] = useState(false);
-  const [userName, setUserName] = useState('Utilisateur');
+  const userName = useCurrentUser();
 
   const fetchTransaction = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/transactions', { withCredentials: true });
+      const res = await api.get('/transactions');
       setTransactions(res.data.transactions || []);
     } catch (error) {
       console.error('Erreur récupération:', error);
@@ -157,17 +225,8 @@ function Dashboard() {
 
   const checkSampleData = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/auth/sample-data', { withCredentials: true });
+      const res = await api.get('/auth/sample-data');
       setHasSample(res.data.hasSample);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const fetchUser = async () => {
-    try {
-      const res = await axios.get('http://localhost:5000/api/auth/getMe', { withCredentials: true });
-      if (res.data.user?.username) setUserName(res.data.user.username);
     } catch (error) {
       console.error(error);
     }
@@ -176,12 +235,11 @@ function Dashboard() {
   useEffect(() => {
     fetchTransaction();
     checkSampleData();
-    fetchUser();
   }, []);
 
   const handleLogout = async () => {
     try {
-      await axios.post('http://localhost:5000/api/auth/logout', {}, { withCredentials: true });
+      await api.post('/auth/logout', {});
       navigate('/login');
     } catch (error) {
       console.error('Erreur déconnexion:', error);
@@ -190,7 +248,7 @@ function Dashboard() {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/api/transactions/${id}`, { withCredentials: true });
+      await api.delete(`/transactions/${id}`);
       fetchTransaction();
       showToast('Opération supprimée', 'success');
     } catch (error) {
@@ -228,18 +286,12 @@ function Dashboard() {
     value: transactions.filter(t => t.type === 'expense' && t.category === cat)
       .reduce((s, t) => s + parseFloat(t.amount), 0)
   })).filter(d => d.value > 0);
-  const pieDataToUse = pieDataReal.length > 0 ? pieDataReal : pieDataFake;
+  const pieDataToUse = pieDataReal.length > 0 ? pieDataReal : (hasSample ? pieDataFake : []);
 
-  const monthNames = ['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
-  const trendDataReal = monthNames.map((name, i) => {
-    const monthTx = transactions.filter(t => new Date(t.date).getMonth() === i);
-    return {
-      date: name,
-      income: monthTx.filter(t => t.type === 'income').reduce((s, t) => s + parseFloat(t.amount), 0),
-      expense: monthTx.filter(t => t.type === 'expense').reduce((s, t) => s + parseFloat(t.amount), 0),
-    };
-  });
-  const trendDataToUse = transactions.length > 0 ? trendDataReal : trendDataFake;
+  const trendDataToUse = useMemo(() => {
+    if (transactions.length === 0) return hasSample ? getFakeTrendData(period) : [];
+    return buildTrendData(transactions, period);
+  }, [transactions, period, hasSample]);
 
   return (
     
@@ -370,7 +422,7 @@ function Dashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="font-black text-slate-900 text-sm">Évolution financière</h3>
-                  <p className="text-slate-400 text-xs mt-0.5">Revenus vs dépenses sur l'année</p>
+                  <p className="text-slate-400 text-xs mt-0.5">{PERIOD_SUBTITLES[period]}</p>
                 </div>
                 <div className="flex bg-slate-50 p-1 rounded-xl border border-slate-200/40">
                   {['3M', 'Mensuel', 'Annuel'].map((p) => (
@@ -382,27 +434,33 @@ function Dashboard() {
                 </div>
               </div>
               <div className="h-[220px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={trendDataToUse} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                    <defs>
-                      <linearGradient id="gInc" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#6366f1" stopOpacity={0.18} />
-                        <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
-                      </linearGradient>
-                      <linearGradient id="gExp" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#f43f5e" stopOpacity={0.15} />
-                        <stop offset="95%" stopColor="#f43f5e" stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                    <XAxis dataKey="date" axisLine={false} tickLine={false} stroke="#94a3b8" style={{ fontSize: '11px', fontWeight: 600 }} />
-                    <YAxis axisLine={false} tickLine={false} stroke="#94a3b8" style={{ fontSize: '11px', fontWeight: 600 }} />
-                    <Tooltip contentStyle={{ backgroundColor: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', fontSize: '12px', fontWeight: 600 }}
-                      formatter={(val, name) => [`${Number(val).toLocaleString('fr-FR')} FCFA`, name === 'income' ? 'Revenus' : 'Dépenses']} />
-                    <Area type="monotone" dataKey="income" stroke="#6366f1" strokeWidth={2.5} fill="url(#gInc)" />
-                    <Area type="monotone" dataKey="expense" stroke="#f43f5e" strokeWidth={2.5} fill="url(#gExp)" />
-                  </AreaChart>
-                </ResponsiveContainer>
+                {trendDataToUse.length === 0 ? (
+                  <div className="flex items-center justify-center h-full">
+                    <p className="text-xs text-slate-400 font-semibold">Aucune donnée à afficher</p>
+                  </div>
+                ) : (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart key={period} data={trendDataToUse} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                      <defs>
+                        <linearGradient id="gInc" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#6366f1" stopOpacity={0.18} />
+                          <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
+                        </linearGradient>
+                        <linearGradient id="gExp" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#f43f5e" stopOpacity={0.15} />
+                          <stop offset="95%" stopColor="#f43f5e" stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                      <XAxis dataKey="date" axisLine={false} tickLine={false} stroke="#94a3b8" style={{ fontSize: '11px', fontWeight: 600 }} />
+                      <YAxis axisLine={false} tickLine={false} stroke="#94a3b8" style={{ fontSize: '11px', fontWeight: 600 }} />
+                      <Tooltip contentStyle={{ backgroundColor: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', fontSize: '12px', fontWeight: 600 }}
+                        formatter={(val, name) => [`${Number(val).toLocaleString('fr-FR')} FCFA`, name === 'income' ? 'Revenus' : 'Dépenses']} />
+                      <Area type="monotone" dataKey="income" stroke="#6366f1" strokeWidth={2.5} fill="url(#gInc)" />
+                      <Area type="monotone" dataKey="expense" stroke="#f43f5e" strokeWidth={2.5} fill="url(#gExp)" />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                )}
               </div>
               <div className="flex items-center gap-5 pt-1">
                 <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-indigo-500" /><span className="text-xs font-semibold text-slate-500">Revenus</span></div>
@@ -417,14 +475,20 @@ function Dashboard() {
                 <p className="text-slate-400 text-xs mt-0.5">Dépenses par catégorie</p>
               </div>
               <div className="h-[180px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie data={pieDataToUse} cx="50%" cy="50%" innerRadius={52} outerRadius={80} paddingAngle={3} dataKey="value">
-                      {pieDataToUse.map((_, i) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
-                    </Pie>
-                    <Tooltip formatter={(val) => [`${Number(val).toLocaleString('fr-FR')} FCFA`]} contentStyle={{ borderRadius: '10px', fontSize: '12px', border: '1px solid #e2e8f0' }} />
-                  </PieChart>
-                </ResponsiveContainer>
+                {pieDataToUse.length === 0 ? (
+                  <div className="flex items-center justify-center h-full">
+                    <p className="text-xs text-slate-400 font-semibold">Aucune donnée à afficher</p>
+                  </div>
+                ) : (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie data={pieDataToUse} cx="50%" cy="50%" innerRadius={52} outerRadius={80} paddingAngle={3} dataKey="value">
+                        {pieDataToUse.map((_, i) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
+                      </Pie>
+                      <Tooltip formatter={(val) => [`${Number(val).toLocaleString('fr-FR')} FCFA`]} contentStyle={{ borderRadius: '10px', fontSize: '12px', border: '1px solid #e2e8f0' }} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                )}
               </div>
               <div className="flex flex-col gap-2">
                 {pieDataToUse.map((item, i) => (

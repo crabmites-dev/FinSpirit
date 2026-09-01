@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from './api.js';
 import {
   PlusCircle, Trash2, X, LayoutDashboard, ReceiptEuro, HandCoins,
   LogOut, CircleDollarSign, Bell, Menu, CreditCard, Landmark, Trophy, Target,
@@ -8,6 +8,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useToast } from './ToastContext.jsx';
 import CapBudgetLogo from './CapBudgetLogo.jsx';
+import { useCurrentUser } from './useCurrentUser.js';
 
 const getGreeting = () => {
   const h = new Date().getHours();
@@ -170,12 +171,12 @@ function Budget() {
   const [formLimit, setFormLimit] = useState('');
   const [formSpent, setFormSpent] = useState('');
 
-  const userName = 'Crabmites';
+  const userName = useCurrentUser();
 
   const fetchBudgets = async () => {
     try {
       setLoading(true);
-      const res = await axios.get('http://localhost:5000/api/budgets', { withCredentials: true });
+      const res = await api.get('/budgets');
       setBudgets(res.data.budgets || []);
     } catch (err) {
       console.error(err);
@@ -225,9 +226,9 @@ function Budget() {
     };
     try {
       if (editingBudget) {
-        await axios.put(`http://localhost:5000/api/budgets/${editingBudget.id}`, payload, { withCredentials: true });
+        await api.put(`/budgets/${editingBudget.id}`, payload);
       } else {
-        await axios.post('http://localhost:5000/api/budgets', payload, { withCredentials: true });
+        await api.post('/budgets', payload);
       }
       setIsModalOpen(false);
       fetchBudgets();
@@ -241,7 +242,7 @@ function Budget() {
   const handleDelete = async (id) => {
     if (!window.confirm('Supprimer ce budget ?')) return;
     try {
-      await axios.delete(`http://localhost:5000/api/budgets/${id}`, { withCredentials: true });
+      await api.delete(`/budgets/${id}`);
       fetchBudgets();
       showToast('Budget supprimé', 'success');
     } catch (err) {
@@ -253,7 +254,7 @@ function Budget() {
   // ── Déconnexion ────────────────────────────────────────────────
   const handleLogout = async () => {
     try {
-      await axios.post('http://localhost:5000/api/auth/logout', {}, { withCredentials: true });
+      await api.post('/auth/logout', {});
       navigate('/login');
     } catch (err) {
       console.error(err);
