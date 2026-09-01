@@ -286,7 +286,7 @@ function Transactions() {
   };
 
   const handleLogout = async () => {
-    try { await api.post('/auth/logout', {}); navigate('/login'); }
+    try { await api.post('/auth/logout', {}); localStorage.removeItem('userName'); navigate('/login'); }
     catch (e) { console.error(e); }
   };
 
@@ -301,8 +301,8 @@ function Transactions() {
         <div className="flex flex-col gap-8">
           <div className="flex items-center justify-between px-1">
             <div className="flex items-center gap-2">
-              <div className="p-1.5 bg-indigo-600 rounded-lg text-white shadow-sm shadow-indigo-600/20"><Wallet className="w-3.5 h-3.5" /></div>
-              <span className="font-bold text-slate-900 tracking-tight text-sm">Depensio</span>
+              <div className="p-2 bg-indigo-600 rounded-lg text-white shadow-sm shadow-indigo-600/20"><Wallet className="w-4 h-4" /></div>
+              <span className="font-bold text-slate-900 tracking-tight text-base">Depensio</span>
             </div>
             <button onClick={() => setIsMobile(false)} className="md:hidden text-slate-500 cursor-pointer"><X className="w-5 h-5" /></button>
           </div>
