@@ -13,7 +13,7 @@ import {
   CircleDollarSign
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from './api.js';
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
 
 
@@ -41,14 +41,14 @@ function Dash() {
     const dashboardData = async () => {
       try {
         const [summaryRes, transactionsRes, categoryRes] = await Promise.all ([
-          axios.get('http://localhost:5000/api/transactions/summary', {withCredentials: true}),
-          axios.get('http://localhost:5000/api/transactions', {withCredentials: true}),
-          axios.get('http://localhost:5000/api/transactions/category', {withCredentials: true})
+          api.get('/transactions/summary', {withCredentials: true}),
+          api.get('/transactions', {withCredentials: true}),
+          api.get('/transactions/categorie', {withCredentials: true})
         ])
 
         setSummary(summaryRes.data);
         setTransactions(transactionsRes.data.transactions);
-        setGraphData(categoryRes.data.category)
+        setGraphData(categoryRes.data.categories || [])
 
       } catch (error) {
         console.log('Erreur lors du chargement des données', error);
@@ -59,7 +59,7 @@ function Dash() {
 
   const handleLogout = async () => {
     try {
-      await axios.post('http://localhost:5000/api/auth/logout', {}, { withCredentials: true });
+      await api.post('/auth/logout', {});
       navigate('/login');
     } catch (err) {
       console.error("Erreur lors de la déconnexion", err);
@@ -71,7 +71,7 @@ function Dash() {
     setModalLoading(true)
 
     try {
-      await axios.post('http://localhost:5000/api/transactions', {
+      await api.post('/transactions', {
         type, 
         amount: parseFloat(amount),
         category,

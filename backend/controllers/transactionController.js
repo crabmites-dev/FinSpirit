@@ -29,7 +29,7 @@ export const getTransaction = async (req, res) => {
 
     try {
         const result = await pool.query(
-            'SELECT * FROM transactions WHERE user_id = $1 ORDER BY date DESC, created_at DESC',
+            'SELECT * FROM transactions WHERE user_id = $1 ORDER BY date DESC NULLS LAST, id DESC',
             [userId]
         )
         return res.json({ transactions: result.rows }) 

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Mail, ArrowRight } from 'lucide-react';
-import axios from 'axios';
+import api from './api.js';
 import { Link, useNavigate } from 'react-router-dom';
 import { useToast } from './ToastContext.jsx';
 import { FormBrandHeader } from './CapBudgetLogo.jsx';
@@ -18,7 +18,7 @@ function Signin() {
     setLoading(true);
 
     try {
-      await axios.post('http://localhost:5000/api/auth/login', { email, password }, { withCredentials: true });
+      await api.post('/auth/login', { email: email.trim().toLowerCase(), password });
       showToast('Connexion réussie ! Bienvenue', 'success');
       setEmail('');
       setPassword('');
@@ -59,7 +59,7 @@ function Signin() {
           </div>
 
           <div className="text-right pt-0.5">
-            <Link to="/forgotPassword" className="text-slate-900 text-xs font-semibold hover:text-slate-700 transition-colors hover:underline">
+            <Link to="/forgotPassword" className="text-indigo-600 text-xs font-semibold hover:text-indigo-500 transition-colors hover:underline">
               Mot de passe oublié ?
             </Link>
           </div>
@@ -67,7 +67,7 @@ function Signin() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full flex justify-center items-center gap-2 bg-slate-900 hover:bg-slate-700 text-white font-semibold py-3 px-3 rounded-2xl shadow-md shadow-indigo-600/10 active:scale-[0.99] transition-all duration-150 cursor-pointer mt-4 disabled:opacity-60"
+            className="w-full flex justify-center items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 px-3 rounded-2xl shadow-md shadow-indigo-600/10 active:scale-[0.99] transition-all duration-150 cursor-pointer mt-4 disabled:opacity-60"
           >
             {loading ? (
               <span className="loading loading-spinner loading-sm"></span>
@@ -82,7 +82,7 @@ function Signin() {
 
         <p className="text-grey-100 mt-8 text-sm font-medium">
           Pas encore de compte ?{' '}
-          <Link to="/register" className="text-slate-600 font-bold hover:underline transition-colors">
+          <Link to="/register" className="text-indigo-600 font-bold hover:underline transition-colors">
             S'inscrire
           </Link>
         </p>

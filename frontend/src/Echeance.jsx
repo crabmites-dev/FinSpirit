@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
-import axios from 'axios';
+import api from './api.js';
 import {
   PlusCircle, Trash2, X, LayoutDashboard, ReceiptEuro, 
   LogOut, CircleDollarSign, Bell, Menu, CreditCard, PiggyBank,
@@ -11,6 +11,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useToast } from './ToastContext.jsx';
 import CapBudgetLogo from './CapBudgetLogo.jsx';
+import { useCurrentUser } from './useCurrentUser.js';
 
 // ── Utilitaires ──────────────────────────────────────────────────
 const getGreeting = () => {
@@ -225,7 +226,7 @@ function Echeances() {
   const [formNote, setFormNote] = useState('');
   const [formReminder, setFormReminder] = useState(true);
 
-  const userName = 'Crabmites';
+  const userName = useCurrentUser();
 
   const [bills, setBills] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -233,7 +234,7 @@ function Echeances() {
   const fetchEcheances = async () => {
     try {
       setLoading(true);
-      const res = await axios.get('http://localhost:5000/api/echeances', { withCredentials: true });
+      const res = await api.get('/echeances');
       setBills(res.data.echeances || []);
     } catch (err) {
       console.error(err);
@@ -321,9 +322,9 @@ function Echeances() {
     };
     try {
       if (editingBill) {
-        await axios.put(`http://localhost:5000/api/echeances/${editingBill.id}`, data, { withCredentials: true });
+        await api.put(`/echeances/${editingBill.id}`, data);
       } else {
-        await axios.post('http://localhost:5000/api/echeances', data, { withCredentials: true });
+        await api.post('/echeances', data);
       }
       setIsModalOpen(false);
       fetchEcheances();
@@ -337,7 +338,7 @@ function Echeances() {
   const handleDelete = async (id) => {
     if (!window.confirm('Supprimer cette échéance ?')) return;
     try {
-      await axios.delete(`http://localhost:5000/api/echeances/${id}`, { withCredentials: true });
+      await api.delete(`/echeances/${id}`);
       fetchEcheances();
       showToast('Échéance supprimée', 'success');
     } catch (err) {
@@ -348,7 +349,7 @@ function Echeances() {
 
   const handleTogglePaid = async (id) => {
     try {
-      await axios.patch(`http://localhost:5000/api/echeances/${id}/toggle-paid`, {}, { withCredentials: true });
+      await api.patch(`/echeances/${id}/toggle-paid`, {});
       fetchEcheances();
       showToast('Statut de paiement mis à jour', 'info');
     } catch (err) {
@@ -359,7 +360,7 @@ function Echeances() {
 
   const handleLogout = async () => {
     try {
-      await axios.post('http://localhost:5000/api/auth/logout', {}, { withCredentials: true });
+      await api.post('/auth/logout', {});
       navigate('/login');
     } catch (err) { console.error(err); }
   };

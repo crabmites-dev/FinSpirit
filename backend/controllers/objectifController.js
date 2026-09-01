@@ -4,19 +4,17 @@ const mapObjectif = (row) => ({
   id: row.id,
   name: row.name,
   category: row.category,
-  description: row.description || row.text || '',
+  description: row.description || '',
   target: parseFloat(row.target),
   saved: parseFloat(row.saved ?? 0),
-  deadline: (row.deadline || row.date)
-    ? String(row.deadline || row.date).slice(0, 10)
-    : null,
-  is_sample: row.is_sample ?? row.is_seed ?? false,
+  deadline: row.deadline ? String(row.deadline).slice(0, 10) : null,
+  is_sample: row.is_sample ?? false,
 });
 
 export const getObjectifs = async (req, res) => {
   try {
     const result = await pool.query(
-      'SELECT * FROM objectifs WHERE user_id = $1 ORDER BY created_at DESC',
+      'SELECT * FROM objectifs WHERE user_id = $1 ORDER BY created_at DESC NULLS LAST, id DESC',
       [req.user.id]
     );
     return res.json({ objectifs: result.rows.map(mapObjectif) });
@@ -33,8 +31,8 @@ export const addObjectif = async (req, res) => {
   }
   try {
     const result = await pool.query(
-      `INSERT INTO objectifs (user_id, name, category, description, text, target, saved, deadline, date)
-       VALUES ($1, $2, $3, $4, $4, $5, $6, $7, $7) RETURNING *`,
+      `INSERT INTO objectifs (user_id, name, category, description, target, saved, deadline)
+       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
       [req.user.id, name, category, description || '', target, saved || 0, deadline || null]
     );
     return res.status(201).json({ objectif: mapObjectif(result.rows[0]) });
@@ -48,8 +46,8 @@ export const updateObjectif = async (req, res) => {
   const { name, category, description, target, saved, deadline } = req.body;
   try {
     const result = await pool.query(
-      `UPDATE objectifs SET name = $1, category = $2, description = $3, text = $3,
-       target = $4, saved = $5, deadline = $6, date = $6
+      `UPDATE objectifs SET name = $1, category = $2, description = $3,
+       target = $4, saved = $5, deadline = $6
        WHERE id = $7 AND user_id = $8 RETURNING *`,
       [name, category, description || '', target, saved ?? 0, deadline || null, req.params.id, req.user.id]
     );

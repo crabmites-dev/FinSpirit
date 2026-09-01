@@ -5,14 +5,14 @@ const mapBudget = (row) => ({
   name: row.name,
   category: row.category,
   limit: parseFloat(row.budget_limit),
-  spent: parseFloat(row.spent ?? row.spend ?? 0),
-  is_sample: row.is_sample ?? row.is_seed ?? false,
+  spent: parseFloat(row.spent ?? 0),
+  is_sample: row.is_sample ?? false,
 });
 
 export const getBudgets = async (req, res) => {
   try {
     const result = await pool.query(
-      'SELECT * FROM budgets WHERE user_id = $1 ORDER BY created_at DESC',
+      'SELECT * FROM budgets WHERE user_id = $1 ORDER BY created_at DESC NULLS LAST, id DESC',
       [req.user.id]
     );
     return res.json({ budgets: result.rows.map(mapBudget) });
@@ -29,7 +29,7 @@ export const addBudget = async (req, res) => {
   }
   try {
     const result = await pool.query(
-      'INSERT INTO budgets (user_id, name, category, budget_limit, spend, spent) VALUES ($1, $2, $3, $4, $5, $5) RETURNING *',
+      'INSERT INTO budgets (user_id, name, category, budget_limit, spent) VALUES ($1, $2, $3, $4, $5) RETURNING *',
       [req.user.id, name, category, limit, spent || 0]
     );
     return res.status(201).json({ budget: mapBudget(result.rows[0]) });
@@ -43,7 +43,7 @@ export const updateBudget = async (req, res) => {
   const { name, category, limit, spent } = req.body;
   try {
     const result = await pool.query(
-      `UPDATE budgets SET name = $1, category = $2, budget_limit = $3, spend = $4, spent = $4
+      `UPDATE budgets SET name = $1, category = $2, budget_limit = $3, spent = $4
        WHERE id = $5 AND user_id = $6 RETURNING *`,
       [name, category, limit, spent ?? 0, req.params.id, req.user.id]
     );

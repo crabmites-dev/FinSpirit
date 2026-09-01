@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from './api.js';
 import {
   BarChart, Bar, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell
 } from 'recharts';
@@ -12,6 +12,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useToast } from './ToastContext.jsx';
 import CapBudgetLogo from './CapBudgetLogo.jsx';
+import { useCurrentUser } from './useCurrentUser.js';
 const COLORS = ['#ef4444', '#f97316', '#f59e0b', '#fb7185', '#8b5cf6', '#14b8a6'];
 
 const fakeExpenseGraph = [
@@ -68,6 +69,7 @@ function Depenses() {  // ✅ Fix 1 — renommé Depenses (pas Revenus)
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [hasSample, setHasSample] = useState(false);
 
   // Modal ajout
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -82,13 +84,13 @@ function Depenses() {  // ✅ Fix 1 — renommé Depenses (pas Revenus)
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 6;
 
-  const userName = 'Crabmites';
+  const userName = useCurrentUser();
 
   // ── Fetch ──────────────────────────────────────────────────────
   const fetchDepenses = async () => { // ✅ Fix 3 — renommé fetchDepenses
     try {
       setLoading(true);
-      const res = await axios.get('http://localhost:5000/api/transactions', { withCredentials: true });
+      const res = await api.get('/transactions');
       // ✅ Fix 4 — filtre 'expense' et non 'income'
       const expenseOnly = (res.data.transactions || []).filter(t => t.type === 'expense');
       setTransactions(expenseOnly);
@@ -99,7 +101,19 @@ function Depenses() {  // ✅ Fix 1 — renommé Depenses (pas Revenus)
     }
   };
 
-  useEffect(() => { fetchDepenses(); }, []);
+  const checkSampleData = async () => {
+    try {
+      const res = await api.get('/auth/sample-data');
+      setHasSample(res.data.hasSample);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => { 
+    fetchDepenses();
+    checkSampleData();
+  }, []);
 
   // ── Total dépenses ─────────────────────────────────────────────
   const totalExpense = transactions.reduce((acc, t) => acc + parseFloat(t.amount), 0);
@@ -107,7 +121,7 @@ function Depenses() {  // ✅ Fix 1 — renommé Depenses (pas Revenus)
   // ── Déconnexion ────────────────────────────────────────────────
   const handleLogout = async () => {
     try {
-      await axios.post('http://localhost:5000/api/auth/logout', {}, { withCredentials: true });
+      await api.post('/auth/logout', {});
       navigate('/login');
     } catch (err) {
       console.error('Erreur déconnexion:', err);
@@ -120,13 +134,13 @@ function Depenses() {  // ✅ Fix 1 — renommé Depenses (pas Revenus)
     setModalLoading(true);
     setModalError('');
     try {
-      await axios.post('http://localhost:5000/api/transactions', {
+      await api.post('/transactions', {
         title,
         amount: parseFloat(amount),
         type: 'expense',
         category,
         date
-      }, { withCredentials: true });
+      });
       setIsModalOpen(false);
       setTitle('');
       setAmount('');
@@ -146,7 +160,7 @@ function Depenses() {  // ✅ Fix 1 — renommé Depenses (pas Revenus)
   const handleDeleteExpense = async (id) => {
     if (!window.confirm('Voulez-vous supprimer cette dépense ?')) return;
     try {
-      await axios.delete(`http://localhost:5000/api/transactions/${id}`, { withCredentials: true });
+      await api.delete(`/transactions/${id}`);
       fetchDepenses();
       showToast('Dépense supprimée', 'success');
     } catch (err) {
@@ -175,7 +189,7 @@ function Depenses() {  // ✅ Fix 1 — renommé Depenses (pas Revenus)
     name: cat,
     value: transactions.filter(t => t.category === cat).reduce((s, t) => s + parseFloat(t.amount), 0)
   }));
-  const graphDataToUse = realGraphData.length > 0 ? realGraphData : fakeExpenseGraph;
+  const graphDataToUse = realGraphData.length > 0 ? realGraphData : (hasSample ? fakeExpenseGraph : []);
 
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-slate-50">
@@ -309,22 +323,28 @@ function Depenses() {  // ✅ Fix 1 — renommé Depenses (pas Revenus)
                 <p className="text-slate-400 text-[11px] mt-0.5">Suivi global de vos dépenses</p>
               </div>
               <div className="w-full h-[180px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={graphDataToUse} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                    <XAxis dataKey="name" axisLine={false} tickLine={false} stroke="#94a3b8" style={{ fontSize: '11px', fontWeight: 600 }} />
-                    <YAxis axisLine={false} tickLine={false} stroke="#94a3b8" style={{ fontSize: '11px', fontWeight: 600 }} />
-                    <Tooltip
-                      contentStyle={{ backgroundColor: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', fontSize: '12px' }}
-                      formatter={(value) => [`${value.toLocaleString('fr-FR')} FCFA`, 'Total']}
-                    />
-                    <Bar dataKey="value" radius={[6, 6, 0, 0]} barSize={32}>
-                      {graphDataToUse.map((_, index) => (
-                        <Cell key={index} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
+                {graphDataToUse.length === 0 ? (
+                  <div className="flex items-center justify-center h-full">
+                    <p className="text-xs text-slate-400 font-semibold">Aucune donnée à afficher</p>
+                  </div>
+                ) : (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={graphDataToUse} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                      <XAxis dataKey="name" axisLine={false} tickLine={false} stroke="#94a3b8" style={{ fontSize: '11px', fontWeight: 600 }} />
+                      <YAxis axisLine={false} tickLine={false} stroke="#94a3b8" style={{ fontSize: '11px', fontWeight: 600 }} />
+                      <Tooltip
+                        contentStyle={{ backgroundColor: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', fontSize: '12px' }}
+                        formatter={(value) => [`${value.toLocaleString('fr-FR')} FCFA`, 'Total']}
+                      />
+                      <Bar dataKey="value" radius={[6, 6, 0, 0]} barSize={32}>
+                        {graphDataToUse.map((_, index) => (
+                          <Cell key={index} fill={COLORS[index % COLORS.length]} />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                )}
               </div>
             </div>
           </section>

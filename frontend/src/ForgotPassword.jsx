@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import axios from 'axios';
+import api from './api.js';
 import { Mail, Send, ArrowLeft } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useToast } from './ToastContext.jsx';
@@ -16,7 +16,7 @@ function ForgotPassword() {
     setLoading(true);
 
     try {
-      await axios.post('http://localhost:5000/api/auth/forgotPassword', { email }, { withCredentials: true });
+      await api.post('/auth/forgotPassword', { email });
       showToast('Un code a été envoyé à votre adresse e-mail', 'success');
       navigate('/resetPassword', { state: { email } });
     } catch (error) {

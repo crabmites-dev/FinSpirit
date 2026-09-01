@@ -46,70 +46,89 @@ const buildResetCodeEmail = (code) => `
 `
 
 export const register = async (req, res) => {
-    const {username, email, password} = req.body
+    const username = req.body.username?.trim()
+    const email = req.body.email?.trim().toLowerCase()
+    const password = req.body.password
 
-    if(!username || !email || !password) {
-        return res.status(401).json({message: 'Remplir tous les champs'})
+    if (!username || !email || !password) {
+        return res.status(400).json({ message: 'Remplir tous les champs' })
     }
 
+    const client = await pool.connect()
+
     try {
-        const userExist = await pool.query('SELECT * FROM users WHERE email = $1', [email])
+        await client.query('BEGIN')
+
+        const userExist = await client.query( 'SELECT id FROM users WHERE LOWER(email) = $1',[email])
 
         if (userExist.rows.length > 0) {
-            return res.status(401).json({message: 'Cet utilisateur existe deja '})
-        } 
+            await client.query('ROLLBACK')
+            return res.status(409).json({
+                message: 'Cet e-mail est déjà utilisé. Connectez-vous ou choisissez un autre e-mail.',
+            })
+        }
 
         const hashedPassword = await bcrypt.hash(password, 10)
 
-        const newUser = await pool.query('INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING *', [username, email, hashedPassword])
-         
+        const newUser = await client.query(
+            'INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING *',
+            [username, email, hashedPassword]
+        )
+
         const userId = newUser.rows[0].id
-        await seedData(userId)
+        await seedData(userId, client)
+
+        await client.query('COMMIT')
 
         const token = generateToken(userId)
-
         res.cookie('token', token, cookieOption)
 
-        res.status(201).json({message: 'Utilisateur crée avec succès !'})
-
+        return res.status(201).json({ message: 'Utilisateur créé avec succès !' })
     } catch (error) {
-        console.error(error)
-        return res.status(500).json({message: `Une erreur est survenue lors de l'inscription`})
+        await client.query('ROLLBACK')
+        console.error('Erreur inscription:', error)
+        return res.status(500).json({ message: 'Une erreur est survenue lors de l\'inscription' })
+    } finally {
+        client.release()
     }
 }
 
 export const login = async (req, res) => {
-    const {email, password} = req.body
+    const email = req.body.email?.trim().toLowerCase()
+    const password = req.body.password
 
     if(!email || !password) {
-        return res.status(401).json({message: 'Veillez remplir tous les champs'})
+        return res.status(400).json({message: 'Veillez remplir tous les champs'})
     }
 
     try {
-        const userExist = await pool.query('SELECT * FROM users WHERE email = $1', [email])
+        const userExist = await pool.query('SELECT * FROM users WHERE LOWER(email) = $1', [email])
     
         if(userExist.rows.length === 0) {
             return res.status(400).json({message: 'Utiisateur introuvable'})
         }
 
         const user = userExist.rows[0]
-
+        
         const isMatch = await bcrypt.compare(password, user.password)
 
-        if(!isMatch) {
-            return res.status(400).json({message: 'Identifiants invalides'})
+        if (!isMatch) {
+            return res.status(400).json({ message: 'Identifiants invalides' })
         }
-        
-        const token = generateToken(user.id)
 
+        const token = generateToken(user.id)
         res.cookie('token', token, cookieOption)
 
-        const sampleCheck = await pool.query(
-            'SELECT id FROM transactions WHERE user_id = $1 AND is_sample = true LIMIT 1',
-            [user.id]
-        )
-        if (sampleCheck.rows.length === 0) {
-            await seedData(user.id)
+        try {
+            const sampleCheck = await pool.query(
+                'SELECT id FROM transactions WHERE user_id = $1 AND is_sample = true LIMIT 1',
+                [user.id]
+            )
+            if (sampleCheck.rows.length === 0) {
+                await seedData(user.id)
+            }
+        } catch (seedError) {
+            console.error('Seed après connexion (non bloquant):', seedError.message)
         }
 
         return res.status(200).json({
