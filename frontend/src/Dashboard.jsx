@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from './ToastContext.jsx';
+import NotificationPanel from './NotificationPanel.jsx';
 import CapBudgetLogo from './CapBudgetLogo.jsx';
 import { useCurrentUser } from './useCurrentUser.js';
 
@@ -375,10 +376,7 @@ function Dashboard() {
           </div>
 
           <div className="flex items-center gap-3">
-            <button className="relative p-2 rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-50 transition-all cursor-pointer">
-              <Bell className="w-4 h-4" />
-              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-indigo-500 rounded-full" />
-            </button>
+            <NotificationPanel />
             <div className="flex items-center gap-2 pl-3 border-l border-slate-200">
               <div className="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center text-white text-xs font-black">
                 {userName.charAt(0).toUpperCase()}

@@ -1,4 +1,5 @@
 import pool from '../config/db.js';
+import * as notificationController from './notificationController.js';
 
 const mapEcheance = (row) => ({
   id: row.id,
@@ -39,6 +40,14 @@ export const addEcheance = async (req, res) => {
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`,
       [req.user.id, name, category, amount, dueDate, frequency || 'monthly', paid ?? false, note || '', reminder ?? true]
     );
+
+    await notificationController.createNotification(
+      req.user.id,
+      'Échéance ajoutée',
+      `${name} est prévue pour le ${dueDate}`,
+      'info'
+    );
+
     return res.status(201).json({ echeance: mapEcheance(result.rows[0]) });
   } catch (error) {
     console.error(error);
@@ -74,6 +83,16 @@ export const togglePaid = async (req, res) => {
     if (result.rows.length === 0) {
       return res.status(404).json({ message: 'Échéance introuvable' });
     }
+
+    const echeance = result.rows[0];
+    const status = echeance.paid ? 'payée' : 'non payée';
+    await notificationController.createNotification(
+      req.user.id,
+      'Échéance mise à jour',
+      `${echeance.name} est maintenant ${status}`,
+      'success'
+    );
+
     return res.json({ echeance: mapEcheance(result.rows[0]) });
   } catch (error) {
     console.error(error);
