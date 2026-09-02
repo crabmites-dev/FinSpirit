@@ -240,6 +240,7 @@ function Dashboard() {
   const handleLogout = async () => {
     try {
       await api.post('/auth/logout', {});
+      localStorage.removeItem('userName');
       navigate('/login');
     } catch (error) {
       console.error('Erreur déconnexion:', error);
@@ -302,11 +303,14 @@ function Dashboard() {
         ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
         <div className="flex flex-col gap-8">
           <div className="flex items-center justify-between px-1">
-            <CapBudgetLogo size="sm" showText />
+            <CapBudgetLogo size="md" showText />
             <button onClick={() => setIsMobileMenuOpen(false)} className="md:hidden text-slate-500 hover:text-indigo-600 cursor-pointer">
               <X className="w-5 h-5" />
             </button>
           </div>
+
+          {/* Separator */}
+          <div className="h-px  bg-gradient-to-r from-slate-200 via-slate-200 to-transparent" />
 
           <nav className="space-y-1">
             {[

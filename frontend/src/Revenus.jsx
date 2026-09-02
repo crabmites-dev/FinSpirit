@@ -116,8 +116,7 @@ function Revenus() {
   // ── Déconnexion ──────────────────────────────────────────────
   const handleLogout = async () => {
     try {
-      await api.post('/auth/logout', {});
-      navigate('/login');
+      await api.post('/auth/logout', {});      localStorage.removeItem('userName');      navigate('/login');
     } catch (err) {
       console.error('Erreur déconnexion:', err);
     }
@@ -194,11 +193,14 @@ function Revenus() {
         <div className="flex flex-col gap-8">
           {/* Logo */}
           <div className="flex items-center justify-between px-1">
-            <CapBudgetLogo size="sm" showText />
+            <CapBudgetLogo size="md" showText />
             <button onClick={() => setIsMobileMenuOpen(false)} className="md:hidden text-slate-500 hover:text-slate-900 cursor-pointer">
               <X className="w-5 h-5" />
             </button>
           </div>
+
+          {/* Separator */}
+          <div className="h-px bg-gradient-to-r from-slate-200 via-slate-200 to-transparent" />
 
           {/* Navigation */}
           <nav className="space-y-1">
@@ -484,7 +486,18 @@ function Revenus() {
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-emerald-600 cursor-pointer transition-all">
                   <option value="Salaire">💰 Salaire</option>
                   <option value="Freelance">💻 Freelance / SaaS</option>
+                  <option value="Prime">🎁 Prime / Bonus</option>
+                  <option value="Commission">💵 Commission</option>
+                  <option value="Commerce">🛍️ Commerce / Vente</option>
+                  <option value="Business">🏢 Business</option>
+                  <option value="Investissement">📈 Investissements</option>
+                  <option value="Location">🏠 Revenus locatifs</option>
+                  <option value="Vente">💸 Vente d'un bien</option>
                   <option value="Remboursement">🔄 Remboursement</option>
+                  <option value="Bourse">🎓 Bourse d'études</option>
+                  <option value="Allocation">🤝 Allocation / Aide</option>
+                  <option value="Pension">👴 Pension / Retraite</option>
+                  <option value="Cadeau">🎁 Cadeau / Don reçu</option>
                   <option value="Autre">🪙 Autre Revenu</option>
                 </select>
               </div>

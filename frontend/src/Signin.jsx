@@ -18,7 +18,10 @@ function Signin() {
     setLoading(true);
 
     try {
-      await api.post('/auth/login', { email: email.trim().toLowerCase(), password });
+      const res = await api.post('/auth/login', { email: email.trim().toLowerCase(), password });
+      if (res.data.user?.username) {
+        localStorage.setItem('userName', res.data.user.username);
+      }
       showToast('Connexion réussie ! Bienvenue', 'success');
       setEmail('');
       setPassword('');

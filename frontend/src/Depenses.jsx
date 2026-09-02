@@ -121,8 +121,7 @@ function Depenses() {  // ✅ Fix 1 — renommé Depenses (pas Revenus)
   // ── Déconnexion ────────────────────────────────────────────────
   const handleLogout = async () => {
     try {
-      await api.post('/auth/logout', {});
-      navigate('/login');
+      await api.post('/auth/logout', {});      localStorage.removeItem('userName');      navigate('/login');
     } catch (err) {
       console.error('Erreur déconnexion:', err);
     }
@@ -200,11 +199,14 @@ function Depenses() {  // ✅ Fix 1 — renommé Depenses (pas Revenus)
 
         <div className="flex flex-col gap-8">
           <div className="flex items-center justify-between px-1">
-            <CapBudgetLogo size="sm" showText />
+            <CapBudgetLogo size="md" showText />
             <button onClick={() => setIsMobileMenuOpen(false)} className="md:hidden text-slate-500 cursor-pointer">
               <X className="w-5 h-5" />
             </button>
           </div>
+
+          {/* Separator */}
+          <div className="h-px bg-gradient-to-r from-slate-200 via-slate-200 to-transparent" />
 
           <nav className="space-y-1">
             {[
