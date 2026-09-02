@@ -13,12 +13,28 @@ dotenv.config()
 
 import pool from './config/db.js'
 
-dotenv.config()
-
 async function ensureDatabaseReady() {
   try {
     await pool.query('SELECT 1 FROM users LIMIT 1')
-  } catch {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS notifications (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        title VARCHAR(255) NOT NULL,
+        message TEXT NOT NULL,
+        type VARCHAR(20) DEFAULT 'info' CHECK (type IN ('success', 'error', 'warning', 'info')),
+        is_read BOOLEAN DEFAULT false,
+        created_at TIMESTAMP DEFAULT NOW()
+      )
+    `)
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id)
+    `)
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS idx_notifications_user_read ON notifications(user_id, is_read)
+    `)
+  } catch (error) {
+    console.error('⚠️ Vérification DB impossible:', error.message)
     console.log('⚠️  Tables absentes — lancez: npm run db:migrate')
   }
 }

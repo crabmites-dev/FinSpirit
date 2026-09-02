@@ -182,6 +182,21 @@ async function migrate() {
     CREATE INDEX IF NOT EXISTS idx_reset_codes_email ON password_reset_codes(email)
   `);
 
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS notifications (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      title VARCHAR(255) NOT NULL,
+      message TEXT NOT NULL,
+      type VARCHAR(20) DEFAULT 'info' CHECK (type IN ('success', 'error', 'warning', 'info')),
+      is_read BOOLEAN DEFAULT false,
+      created_at TIMESTAMP DEFAULT NOW()
+    )
+  `);
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id)
+  `);
+
   // ── Seed pour utilisateurs sans données ──
   const { seedData } = await import('./seed.js');
   const users = await pool.query('SELECT id FROM users');

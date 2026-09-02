@@ -19,8 +19,14 @@ export function NotificationProvider({ children }) {
     try {
       const res = await api.get('/notifications');
       if (res.data.notifications) {
-        setNotifications(res.data.notifications);
-        const unread = res.data.notifications.filter(n => !n.isRead).length;
+        const mapped = res.data.notifications.map((n) => ({
+          ...n,
+          isRead: n.isRead ?? n.is_read ?? false,
+          timestamp: n.timestamp ?? n.created_at ?? new Date().toISOString(),
+        }));
+
+        setNotifications(mapped);
+        const unread = mapped.filter((n) => !n.isRead).length;
         setUnreadCount(unread);
       }
     } catch (error) {
@@ -108,3 +114,4 @@ export function useNotifications() {
   }
   return context;
 }
+ 
