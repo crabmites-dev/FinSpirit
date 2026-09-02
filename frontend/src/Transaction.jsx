@@ -76,8 +76,8 @@ function TxModal({ editingTx, onSave, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md flex flex-col overflow-hidden max-h-[92vh]">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-3 sm:p-0">
+      <div className="mobile-modal-card bg-white rounded-2xl shadow-2xl w-full max-w-md flex flex-col overflow-hidden max-h-[92vh]">
 
         {/* Bande colorée */}
         <div className={`h-2 w-full ${type === 'income' ? 'bg-emerald-500' : 'bg-rose-500'}`} />

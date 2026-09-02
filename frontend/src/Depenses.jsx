@@ -453,8 +453,8 @@ function Depenses() {  // ✅ Fix 1 — renommé Depenses (pas Revenus)
       {/* MODALE AJOUT DÉPENSE                                       */}
       {/* ══════════════════════════════════════════════════════════ */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md flex flex-col gap-5">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-3 sm:p-0">
+          <div className="mobile-modal-card bg-white rounded-2xl shadow-2xl p-5 sm:p-8 w-full max-w-md flex flex-col gap-4 sm:gap-5">
             <div className="flex items-center justify-between">
               <div>
                 {/* ✅ Fix 12 — titre modal correct */}
