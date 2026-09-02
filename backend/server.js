@@ -7,6 +7,7 @@ import transactionRoutes from './routes/transactionRoute.js'
 import budgetRoutes from './routes/budgetRoute.js'
 import objectifRoutes from './routes/objectifRoute.js'
 import echeanceRoutes from './routes/echeanceRoute.js'
+import notificationRoutes from './routes/notificationRoute.js'
 
 dotenv.config()
 
@@ -49,6 +50,7 @@ app.use('/api/transactions', transactionRoutes)
 app.use('/api/budgets', budgetRoutes)
 app.use('/api/objectifs', objectifRoutes)
 app.use('/api/echeances', echeanceRoutes)
+app.use('/api/notifications', notificationRoutes)
 
 const PORT = process.env.PORT || 5000
 

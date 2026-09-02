@@ -1,4 +1,5 @@
 import pool from '../config/db.js'
+import * as notificationController from './notificationController.js'
 
 export const addTransaction = async (req, res) => {
     const { title, amount, type, category, date, note } = req.body
@@ -12,6 +13,16 @@ export const addTransaction = async (req, res) => {
         const newTransaction = await pool.query(
             'INSERT INTO transactions (user_id, title, amount, type, category, date, note) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
             [userId, title, amount, type, category, date, note || '']
+        )
+
+        // Créer une notification
+        const typeSymbol = type === 'income' ? '+' : '-'
+        const notificationType = type === 'income' ? 'success' : 'info'
+        await notificationController.createNotification(
+            userId,
+            'Nouvelle transaction',
+            `${typeSymbol} ${amount} FCFA - ${title}`,
+            notificationType
         )
 
         return res.status(201).json({

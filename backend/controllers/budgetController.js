@@ -1,4 +1,5 @@
 import pool from '../config/db.js';
+import * as notificationController from './notificationController.js';
 
 const mapBudget = (row) => ({
   id: row.id,
@@ -32,6 +33,14 @@ export const addBudget = async (req, res) => {
       'INSERT INTO budgets (user_id, name, category, budget_limit, spent) VALUES ($1, $2, $3, $4, $5) RETURNING *',
       [req.user.id, name, category, limit, spent || 0]
     );
+
+    await notificationController.createNotification(
+      req.user.id,
+      'Budget créé',
+      `Budget "${name}" ajouté pour ${category}`,
+      'success'
+    );
+
     return res.status(201).json({ budget: mapBudget(result.rows[0]) });
   } catch (error) {
     console.error(error);
@@ -50,6 +59,16 @@ export const updateBudget = async (req, res) => {
     if (result.rows.length === 0) {
       return res.status(404).json({ message: 'Budget introuvable' });
     }
+
+    if (limit && spent && Number(spent) > Number(limit)) {
+      await notificationController.createNotification(
+        req.user.id,
+        'Budget dépassé',
+        `Attention : ${category} dépasse son budget`,
+        'warning'
+      );
+    }
+
     return res.json({ budget: mapBudget(result.rows[0]) });
   } catch (error) {
     console.error(error);

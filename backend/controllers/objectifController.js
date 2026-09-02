@@ -1,4 +1,5 @@
 import pool from '../config/db.js';
+import * as notificationController from './notificationController.js';
 
 const mapObjectif = (row) => ({
   id: row.id,
@@ -35,6 +36,14 @@ export const addObjectif = async (req, res) => {
        VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
       [req.user.id, name, category, description || '', target, saved || 0, deadline || null]
     );
+
+    await notificationController.createNotification(
+      req.user.id,
+      'Objectif ajouté',
+      `Objectif "${name}" créé`,
+      'success'
+    );
+
     return res.status(201).json({ objectif: mapObjectif(result.rows[0]) });
   } catch (error) {
     console.error(error);
@@ -54,6 +63,17 @@ export const updateObjectif = async (req, res) => {
     if (result.rows.length === 0) {
       return res.status(404).json({ message: 'Objectif introuvable' });
     }
+
+    const percent = target > 0 ? (saved / target) * 100 : 0;
+    if (percent >= 80 && percent < 100) {
+      await notificationController.createNotification(
+        req.user.id,
+        'Objectif en cours',
+        `${name} est à ${Math.round(percent)}% de son objectif`,
+        'info'
+      );
+    }
+
     return res.json({ objectif: mapObjectif(result.rows[0]) });
   } catch (error) {
     console.error(error);
@@ -74,7 +94,17 @@ export const addFunds = async (req, res) => {
     if (result.rows.length === 0) {
       return res.status(404).json({ message: 'Objectif introuvable' });
     }
-    return res.json({ objectif: mapObjectif(result.rows[0]) });
+    const objectif = result.rows[0];
+    const percent = Number(objectif.target) > 0 ? (Number(objectif.saved) / Number(objectif.target)) * 100 : 0;
+    if (percent >= 100) {
+      await notificationController.createNotification(
+        req.user.id,
+        'Objectif atteint',
+        `Félicitations ! ${objectif.name} est complété`,
+        'success'
+      );
+    }
+    return res.json({ objectif: mapObjectif(objectif) });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: 'Erreur serveur' });
