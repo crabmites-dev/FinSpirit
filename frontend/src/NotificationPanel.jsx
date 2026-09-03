@@ -76,7 +76,11 @@ export default function NotificationPanel() {
 
       {/* Panel notifications */}
       {isOpen && (
-        <div className="absolute right-0 top-12 w-[min(24rem,calc(100vw-1rem))] bg-white rounded-2xl border border-slate-200/80 shadow-2xl z-50 flex flex-col max-h-[37.5rem]">
+        <div
+          role="dialog"
+          aria-label="Notifications"
+          className="fixed inset-x-2 top-16 z-[110] flex max-h-[calc(100vh-5rem)] flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-2xl md:absolute md:inset-x-auto md:right-0 md:top-12 md:w-96 md:max-h-[37.5rem]"
+        >
           {/* En-tête */}
           <div className="border-b border-slate-200/50 p-4 flex items-center justify-between">
             <div>
