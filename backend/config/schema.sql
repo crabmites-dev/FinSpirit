@@ -89,3 +89,14 @@ CREATE TABLE IF NOT EXISTS notifications (
 
 CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id);
 CREATE INDEX IF NOT EXISTS idx_notifications_user_read ON notifications(user_id, is_read);
+
+CREATE TABLE IF NOT EXISTS monthly_reports_sent (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  year INTEGER NOT NULL,
+  month INTEGER NOT NULL,
+  sent_at TIMESTAMP DEFAULT NOW(),
+  UNIQUE(user_id, year, month)
+);
+
+CREATE INDEX IF NOT EXISTS idx_monthly_reports_user ON monthly_reports_sent(user_id);

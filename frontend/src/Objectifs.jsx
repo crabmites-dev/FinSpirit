@@ -7,7 +7,7 @@ import {
   GraduationCap, ShoppingBag, Sparkles, CheckCircle2, Clock,
   TrendingUp, Plus, Minus,
   ArrowLeftRight, CalendarClock,
-  Landmark
+  Landmark, FileText
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from './ToastContext.jsx';
@@ -350,7 +350,8 @@ function Objectifs() {
               { label: 'Depenses', icon: <CreditCard className="w-4 h-4" />, path: '/depense' },
               { label: 'Budget', icon: <Landmark className="w-4 h-4" />, path: '/budget' },
               { label: 'Objectifs', icon: <Trophy className="w-4 h-4" />, path: '/objectifs' },
-              { label: 'Echéances', icon: <CalendarClock className="w-4 h-4" />, path: '/echeances' },
+              { label: 'Échéances', icon: <CalendarClock className="w-4 h-4" />, path: '/echeances' },
+              { label: 'Rapports & Bilan', icon: <FileText className="w-4 h-4" />, path: '/rapports' },
             ].map(({ label, icon, path }) => (
               <button key={label} onClick={() => { navigate(path); setIsMobileMenuOpen(false); }}
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all cursor-pointer ${

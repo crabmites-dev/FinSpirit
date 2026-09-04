@@ -197,6 +197,20 @@ async function migrate() {
     CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id)
   `);
 
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS monthly_reports_sent (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      year INTEGER NOT NULL,
+      month INTEGER NOT NULL,
+      sent_at TIMESTAMP DEFAULT NOW(),
+      UNIQUE(user_id, year, month)
+    )
+  `);
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS idx_monthly_reports_user ON monthly_reports_sent(user_id)
+  `);
+
   // ── Seed pour utilisateurs sans données ──
   const { seedData } = await import('./seed.js');
   const users = await pool.query('SELECT id FROM users');

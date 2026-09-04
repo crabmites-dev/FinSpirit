@@ -4,8 +4,10 @@ import {BarChart, Bar, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer
 import {
   Search,  PlusCircle, Trash2, ChevronLeft, ChevronRight, AlertCircle,
   ArrowUpRight, X, LayoutDashboard, ReceiptEuro, LogOut, Trophy,
-  CircleDollarSign, Bell, Menu, CreditCard, Landmark, CalendarClock, HandCoins, ArrowLeftRight
+  CircleDollarSign, Bell, Menu, CreditCard, Landmark, CalendarClock, HandCoins, ArrowLeftRight,
+  FileText
 } from 'lucide-react'; 
+import PastMonthsSection from './PastMonthsSection.jsx'; 
 import { useNavigate } from 'react-router-dom';
 import { useToast } from './ToastContext.jsx';
 import CapBudgetLogo from './CapBudgetLogo.jsx';
@@ -212,6 +214,7 @@ function Revenus() {
               { label: 'Budget', icon: <Landmark className="w-4 h-4" />, path: '/budget' },
               { label: 'Objectifs', icon: <Trophy className="w-4 h-4" />, path: '/objectifs' },
               { label: 'Echéances', icon: <CalendarClock className="w-4 h-4" />, path: '/echeances' },
+              { label: 'Rapports & Bilan', icon: <FileText className="w-4 h-4" />, path: '/rapports' },
             ].map(({ label, icon, path }) => (
               <button key={label} onClick={() => { navigate(path); setIsMobileMenuOpen(false); }}
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 cursor-pointer ${
@@ -345,6 +348,13 @@ function Revenus() {
               </div>
             </div>
           </section>
+
+          {/* HISTORIQUE DES MOIS PASSÉS */}
+          <PastMonthsSection
+            type="income"
+            title="Historique des revenus des mois passés"
+            subtitle="Visualisez l'évolution de vos rentrées d'argent sur les mois antérieurs"
+          />
 
           {/* ── TABLEAU ───────────────────────────────────────────── */}
           <div className="bg-white p-5 rounded-2xl border border-slate-200/60 shadow-sm flex flex-col gap-4">

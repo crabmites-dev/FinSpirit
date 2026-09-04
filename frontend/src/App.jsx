@@ -12,6 +12,7 @@ import Budget from './Budget.jsx';
 import Objectifs from './Objectifs.jsx';
 import Echeances from './Echeance.jsx';
 import Transaction from './Transaction.jsx';
+import Rapports from './Rapports.jsx';
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
             <Route path='/depense' element={< Depenses />} />
             <Route path='/objectifs' element={< Objectifs />} />
             <Route path='/echeances' element={<Echeances />} />
+            <Route path='/rapports' element={<Rapports />} />
           </Routes>
         </BrowserRouter>
       </NotificationProvider>

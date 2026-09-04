@@ -3,8 +3,10 @@ import api from './api.js';
 import {
   PlusCircle, Trash2, X, LayoutDashboard, ReceiptEuro, HandCoins,
   LogOut, CircleDollarSign, Bell, Menu, CreditCard, Landmark, Trophy, Target,
-  CalendarClock, AlertTriangle, CheckCircle2, TrendingDown, Edit3, ArrowLeftRight
+  CalendarClock, AlertTriangle, CheckCircle2, TrendingDown, Edit3, ArrowLeftRight,
+  FileText
 } from 'lucide-react';
+import PastMonthsSection from './PastMonthsSection.jsx';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from './ToastContext.jsx';
 import CapBudgetLogo from './CapBudgetLogo.jsx';
@@ -21,15 +23,15 @@ const getGreeting = () => {
 // ── Couleur de la jauge selon le % utilisé ──────────────────────
 const getGaugeColor = (percent) => {
   if (percent >= 100) return { bar: 'bg-red-500', text: 'text-red-600', bg: 'bg-red-50', border: 'border-red-200', badge: 'bg-red-100 text-red-700' };
-  if (percent >= 80)  return { bar: 'bg-orange-400', text: 'text-orange-600', bg: 'bg-orange-50', border: 'border-orange-200', badge: 'bg-orange-100 text-orange-700' };
-  if (percent >= 50)  return { bar: 'bg-yellow-400', text: 'text-yellow-600', bg: 'bg-yellow-50', border: 'border-yellow-200', badge: 'bg-yellow-100 text-yellow-700' };
+  if (percent >= 80) return { bar: 'bg-orange-400', text: 'text-orange-600', bg: 'bg-orange-50', border: 'border-orange-200', badge: 'bg-orange-100 text-orange-700' };
+  if (percent >= 50) return { bar: 'bg-yellow-400', text: 'text-yellow-600', bg: 'bg-yellow-50', border: 'border-yellow-200', badge: 'bg-yellow-100 text-yellow-700' };
   return { bar: 'bg-emerald-500', text: 'text-emerald-600', bg: 'bg-emerald-50', border: 'border-emerald-200', badge: 'bg-emerald-100 text-emerald-700' };
 };
 
 const getStatusLabel = (percent) => {
   if (percent >= 100) return { label: 'Dépassé', icon: <AlertTriangle className="w-3 h-3" /> };
-  if (percent >= 80)  return { label: 'Attention', icon: <AlertTriangle className="w-3 h-3" /> };
-  if (percent >= 50)  return { label: 'En cours', icon: <TrendingDown className="w-3 h-3" /> };
+  if (percent >= 80) return { label: 'Attention', icon: <AlertTriangle className="w-3 h-3" /> };
+  if (percent >= 50) return { label: 'En cours', icon: <TrendingDown className="w-3 h-3" /> };
   return { label: 'Sous contrôle', icon: <CheckCircle2 className="w-3 h-3" /> };
 };
 
@@ -255,7 +257,7 @@ function Budget() {
   // ── Déconnexion ────────────────────────────────────────────────
   const handleLogout = async () => {
     try {
-      await api.post('/auth/logout', {});      localStorage.removeItem('userName');      navigate('/login');
+      await api.post('/auth/logout', {}); localStorage.removeItem('userName'); navigate('/login');
     } catch (err) {
       console.error(err);
     }
@@ -283,20 +285,20 @@ function Budget() {
           <div className="h-px  bg-gradient-to-r from-slate-200 via-slate-200 to-transparent" />
 
           <nav className="space-y-1">
-           {[
+            {[
               { label: "Vue d'ensemble", icon: <LayoutDashboard className="w-4 h-4" />, path: '/dashboard' },
               { label: 'Revenus', icon: <CircleDollarSign className="w-4 h-4" />, path: '/revenu' },
               { label: 'Depenses', icon: <CreditCard className="w-4 h-4" />, path: '/depense' },
               { label: 'Budget', icon: <Landmark className="w-4 h-4" />, path: '/budget' },
               { label: 'Objectifs', icon: <Trophy className="w-4 h-4" />, path: '/objectifs' },
-              { label: 'Echéances', icon: <CalendarClock className="w-4 h-4" />, path: '/echeances' },
+              { label: 'Échéances', icon: <CalendarClock className="w-4 h-4" />, path: '/echeances' },
+              { label: 'Rapports & Bilan', icon: <FileText className="w-4 h-4" />, path: '/rapports' },
             ].map(({ label, icon, path }) => (
               <button key={label} onClick={() => { navigate(path); setIsMobileMenuOpen(false); }}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 cursor-pointer ${
-                  window.location.pathname === path
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 cursor-pointer ${window.location.pathname === path
                     ? 'bg-indigo-50 text-indigo-600'
                     : 'text-slate-500 hover:bg-slate-50 hover:text-indigo-600'
-                }`}>
+                  }`}>
                 {icon}<span>{label}</span>
               </button>
             ))}
@@ -449,6 +451,13 @@ function Budget() {
               ))}
             </div>
           )}
+
+          {/* HISTORIQUE & BILAN DES BUDGETS PASSÉS */}
+          <PastMonthsSection
+            type="budget"
+            title="Historique et respect des budgets passés"
+            subtitle="Analysez la maîtrise de vos enveloppes budgétaires au fil des mois précédents"
+          />
         </main>
       </div>
 
