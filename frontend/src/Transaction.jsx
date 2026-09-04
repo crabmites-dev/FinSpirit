@@ -10,7 +10,7 @@ import {
   TrendingUp, TrendingDown, ArrowUpRight, ArrowDownRight,
   PlusCircle, Search, Filter, Download, Trash2, Edit3,
   ChevronLeft, ChevronRight, AlertCircle, CheckCircle2,
-  Layers, Clock, Zap
+  Layers, Clock, Zap, FileText
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useCurrentUser } from './useCurrentUser.js';
@@ -315,8 +315,8 @@ function Transactions() {
               { label:'Dépenses',       icon:<CreditCard className="w-4 h-4" />,      path:'/depense' },
               { label:'Budget',         icon:<Target className="w-4 h-4" />,           path:'/budget' },
               { label:'Objectifs',      icon:<Trophy className="w-4 h-4" />,           path:'/objectifs' },
-              { label:'Épargne',        icon:<PiggyBank className="w-4 h-4" />,        path:'/epargne' },
               { label:'Échéances',      icon:<Calendar className="w-4 h-4" />,         path:'/echeances' },
+              { label:'Rapports & Bilan', icon:<FileText className="w-4 h-4" />,       path:'/rapports' },
             ].map(({ label, icon, path }) => (
               <button key={label} onClick={() => { navigate(path); setIsMobile(false); }}
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all cursor-pointer ${

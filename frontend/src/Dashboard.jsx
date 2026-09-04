@@ -9,7 +9,7 @@ import {
   LayoutDashboard, ReceiptEuro, LogOut, CircleDollarSign, Bell, ArrowLeftRight,
    TrendingDown, TrendingUp, ArrowDownRight, Menu, CreditCard, CalendarClock, HandCoins,
    Landmark,
-   Trophy
+   Trophy, FileText
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from './ToastContext.jsx';
@@ -321,6 +321,7 @@ function Dashboard() {
               { label: 'Budget', icon: <Landmark className="w-4 h-4" />, path: '/budget' },
               { label: 'Objectifs', icon: <Trophy className="w-4 h-4" />, path: '/objectifs' },
               { label: 'Echéances', icon: <CalendarClock className="w-4 h-4" />, path: '/echeances' },
+              { label: 'Rapports & Bilan', icon: <FileText className="w-4 h-4" />, path: '/rapports' },
             ].map(({ label, icon, path }) => (
               <button
                 key={label}
@@ -414,6 +415,28 @@ function Dashboard() {
               </div>
               <div className="p-3 bg-rose-50 rounded-xl text-rose-500"><TrendingDown className="w-5 h-5" /></div>
             </div>
+          </div>
+
+          {/* BANNIÈRE RAPPORT MENSUEL */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gradient-to-r from-indigo-500/10 via-indigo-500/5 to-transparent border border-indigo-200/60 rounded-2xl p-4 sm:p-5">
+            <div className="flex items-center gap-3.5">
+              <div className="p-3 bg-indigo-600 text-white rounded-xl shadow-md shadow-indigo-600/20">
+                <FileText className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-sm font-black text-slate-900">Bilans et Rapports des mois passés</h3>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Consultez l'historique de vos dépenses, comparez vos mois passés et recevez votre bilan détaillé par e-mail.
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => navigate('/rapports')}
+              className="shrink-0 flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-indigo-600/20 cursor-pointer"
+            >
+              <span>Accéder aux rapports complets</span>
+              <ChevronRight className="w-4 h-4" />
+            </button>
           </div>
 
           {/* GRAPHIQUES */}

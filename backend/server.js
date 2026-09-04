@@ -8,6 +8,8 @@ import budgetRoutes from './routes/budgetRoute.js'
 import objectifRoutes from './routes/objectifRoute.js'
 import echeanceRoutes from './routes/echeanceRoute.js'
 import notificationRoutes from './routes/notificationRoute.js'
+import reportRoutes from './routes/reportRoute.js'
+import { initMonthlyReportScheduler } from './services/monthlyReportScheduler.js'
 
 dotenv.config()
 
@@ -32,6 +34,19 @@ async function ensureDatabaseReady() {
     `)
     await pool.query(`
       CREATE INDEX IF NOT EXISTS idx_notifications_user_read ON notifications(user_id, is_read)
+    `)
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS monthly_reports_sent (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        year INTEGER NOT NULL,
+        month INTEGER NOT NULL,
+        sent_at TIMESTAMP DEFAULT NOW(),
+        UNIQUE(user_id, year, month)
+      )
+    `)
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS idx_monthly_reports_user ON monthly_reports_sent(user_id)
     `)
   } catch (error) {
     console.error('⚠️ Vérification DB impossible:', error.message)
@@ -67,10 +82,12 @@ app.use('/api/budgets', budgetRoutes)
 app.use('/api/objectifs', objectifRoutes)
 app.use('/api/echeances', echeanceRoutes)
 app.use('/api/notifications', notificationRoutes)
+app.use('/api/reports', reportRoutes)
 
 const PORT = process.env.PORT || 5000
 
 app.listen(PORT, async () => {
     await ensureDatabaseReady()
+    initMonthlyReportScheduler()
     console.log(`Serveur lancé sur le port ${PORT}`)
 })
