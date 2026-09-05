@@ -327,10 +327,14 @@ export async function sendMonthlyEmailToUser(userId, year, month) {
     frontendUrl
   });
 
-  // 4. Envoyer via nodemailer
-  const mailSubject = `📊 CapBudget — Votre bilan financier de ${reportData.monthName} ${reportData.year}`;
+  // 4. Vérifier les identifiants et envoyer via nodemailer
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    throw new Error('Configuration e-mail manquante : EMAIL_USER ou EMAIL_PASS n\'est pas défini sur le serveur.');
+  }
+
+  const mailSubject = `CapBudget — Relevé financier de ${reportData.monthName} ${reportData.year}`;
   await transporter.sendMail({
-    from: process.env.EMAIL_USER,
+    from: `"CapBudget" <${process.env.EMAIL_USER}>`,
     to: user.email,
     subject: mailSubject,
     html: htmlContent

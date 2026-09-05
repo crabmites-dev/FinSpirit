@@ -1,5 +1,5 @@
+import 'dotenv/config'
 import express from 'express'
-import dotenv from 'dotenv'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import authRoutes from './routes/authRoutes.js'
@@ -10,8 +10,6 @@ import echeanceRoutes from './routes/echeanceRoute.js'
 import notificationRoutes from './routes/notificationRoute.js'
 import reportRoutes from './routes/reportRoute.js'
 import { initMonthlyReportScheduler } from './services/monthlyReportScheduler.js'
-
-dotenv.config()
 
 import pool from './config/db.js'
 
