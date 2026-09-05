@@ -287,8 +287,12 @@ function Transactions() {
   };
 
   const handleLogout = async () => {
-    try { await api.post('/auth/logout', {}); localStorage.removeItem('userName'); navigate('/login'); }
-    catch (e) { console.error(e); }
+    try {
+      await api.post('/auth/logout', {});
+      localStorage.removeItem('userName');
+      localStorage.removeItem('token');
+      navigate('/login');
+    } catch (e) { console.error(e); }
   };
 
   const activeFilters = [search, typeFilter !== 'all' ? '1' : '', catFilter !== 'all' ? '1' : ''].filter(Boolean).length;

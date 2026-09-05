@@ -319,6 +319,7 @@ function Objectifs() {
     try {
       await api.post('/auth/logout', {});
       localStorage.removeItem('userName');
+      localStorage.removeItem('token');
       navigate('/login');
     } catch (err) { console.error(err); }
   };

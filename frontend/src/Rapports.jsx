@@ -163,6 +163,7 @@ export default function Rapports() {
     try {
       await api.post('/auth/logout', {});
       localStorage.removeItem('userName');
+      localStorage.removeItem('token');
       navigate('/login');
     } catch (error) {
       console.error('Erreur déconnexion:', error);

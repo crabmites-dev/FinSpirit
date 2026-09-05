@@ -11,7 +11,7 @@ dotenv.config()
 const cookieOption = {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: 'Lax',
+    sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
     maxAge: 30 * 24 * 60 * 60 * 1000
 }
 
@@ -83,7 +83,15 @@ export const register = async (req, res) => {
         const token = generateToken(userId)
         res.cookie('token', token, cookieOption)
 
-        return res.status(201).json({ message: 'Utilisateur créé avec succès !' })
+        return res.status(201).json({
+            message: 'Utilisateur créé avec succès !',
+            token,
+            user: {
+                id: userId,
+                username: newUser.rows[0].username,
+                email: newUser.rows[0].email
+            }
+        })
     } catch (error) {
         await client.query('ROLLBACK')
         console.error('Erreur inscription:', error)
@@ -133,6 +141,7 @@ export const login = async (req, res) => {
 
         return res.status(200).json({
             message: 'Connexion réussie',
+            token,
             user: {
                 id: user.id,
                 username: user.username,

@@ -9,9 +9,22 @@ export function NotificationProvider({ children }) {
 
   // Fetch notifications au montage
   useEffect(() => {
-    fetchNotifications();
-    // Fetch toutes les 30 secondes pour les mises à jour
-    const interval = setInterval(fetchNotifications, 30000);
+    const isAuthPage = ['/login', '/register', '/forgotPassword', '/resetPassword'].includes(window.location.pathname);
+    const hasAuth = localStorage.getItem('token') || localStorage.getItem('userName');
+
+    if (!isAuthPage && hasAuth) {
+      fetchNotifications();
+    }
+
+    // Fetch toutes les 30 secondes pour les utilisateurs connectés
+    const interval = setInterval(() => {
+      const isAuthPageNow = ['/login', '/register', '/forgotPassword', '/resetPassword'].includes(window.location.pathname);
+      const hasAuthNow = localStorage.getItem('token') || localStorage.getItem('userName');
+      if (!isAuthPageNow && hasAuthNow) {
+        fetchNotifications();
+      }
+    }, 30000);
+
     return () => clearInterval(interval);
   }, []);
 
@@ -30,7 +43,9 @@ export function NotificationProvider({ children }) {
         setUnreadCount(unread);
       }
     } catch (error) {
-      console.error('Erreur récupération notifications:', error);
+      if (error.response?.status !== 401) {
+        console.error('Erreur récupération notifications:', error);
+      }
     }
   };
 

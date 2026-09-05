@@ -19,6 +19,9 @@ function Signin() {
 
     try {
       const res = await api.post('/auth/login', { email: email.trim().toLowerCase(), password });
+      if (res.data.token) {
+        localStorage.setItem('token', res.data.token);
+      }
       if (res.data.user?.username) {
         localStorage.setItem('userName', res.data.user.username);
       }

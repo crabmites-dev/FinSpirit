@@ -67,6 +67,8 @@ app.use(cors({
     origin: (origin, callback) => {
         if (!origin) return callback(null, true)
         if (allowedOrigins.includes(origin)) return callback(null, true)
+        // Autorise tous les déploiements et previews Vercel
+        if (/^https:\/\/.*\.vercel\.app$/.test(origin)) return callback(null, true)
         // Autorise l'accès depuis le réseau local (ex. téléphone : http://192.168.x.x:5173)
         if (/^http:\/\/192\.168\.\d+\.\d+:\d+$/.test(origin)) return callback(null, true)
         if (/^http:\/\/10\.\d+\.\d+\.\d+:\d+$/.test(origin)) return callback(null, true)

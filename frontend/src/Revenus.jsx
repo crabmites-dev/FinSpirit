@@ -119,7 +119,10 @@ function Revenus() {
   // ── Déconnexion ──────────────────────────────────────────────
   const handleLogout = async () => {
     try {
-      await api.post('/auth/logout', {});      localStorage.removeItem('userName');      navigate('/login');
+      await api.post('/auth/logout', {});
+      localStorage.removeItem('userName');
+      localStorage.removeItem('token');
+      navigate('/login');
     } catch (err) {
       console.error('Erreur déconnexion:', err);
     }

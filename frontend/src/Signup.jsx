@@ -32,7 +32,13 @@ function Signup() {
     }
 
     try {
-      await api.post('/auth/register', { username, email: email.trim().toLowerCase(), password });
+      const res = await api.post('/auth/register', { username, email: email.trim().toLowerCase(), password });
+      if (res.data.token) {
+        localStorage.setItem('token', res.data.token);
+      }
+      if (res.data.user?.username || username) {
+        localStorage.setItem('userName', res.data.user?.username || username);
+      }
       showToast('Compte créé avec succès !', 'success');
       setTimeout(() => navigate('/dashboard'), 1200);
     } catch (err) {
