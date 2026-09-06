@@ -15,6 +15,7 @@ import { useToast } from './ToastContext.jsx';
 import CapBudgetLogo from './CapBudgetLogo.jsx';
 import { useCurrentUser } from './useCurrentUser.js';
 import NotificationPanel from './NotificationPanel.jsx';
+import { formatCompact } from './formatUtils.js';
 const COLORS = ['#ef4444', '#f97316', '#f59e0b', '#fb7185', '#8b5cf6', '#14b8a6'];
 
 const fakeExpenseGraph = [
@@ -322,7 +323,7 @@ function Depenses() {  // ✅ Fix 1 — renommé Depenses (pas Revenus)
             </div>
 
             {/* Graphique barres */}
-            <div className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm lg:col-span-2 h-[280px] flex flex-col justify-between">
+            <div className="bg-white p-4 sm:p-6 rounded-2xl border border-slate-200/60 shadow-sm lg:col-span-2 h-[280px] flex flex-col justify-between">
               <div>
                 <h4 className="font-bold text-slate-900 text-sm">Évolution par catégories</h4>
                 <p className="text-slate-400 text-[11px] mt-0.5">Suivi global de vos dépenses</p>
@@ -334,10 +335,17 @@ function Depenses() {  // ✅ Fix 1 — renommé Depenses (pas Revenus)
                   </div>
                 ) : (
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={graphDataToUse} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+                    <BarChart data={graphDataToUse} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                       <XAxis dataKey="name" axisLine={false} tickLine={false} stroke="#94a3b8" style={{ fontSize: '11px', fontWeight: 600 }} />
-                      <YAxis axisLine={false} tickLine={false} stroke="#94a3b8" style={{ fontSize: '11px', fontWeight: 600 }} />
+                      <YAxis
+                        axisLine={false}
+                        tickLine={false}
+                        stroke="#94a3b8"
+                        style={{ fontSize: '11px', fontWeight: 600 }}
+                        width={48}
+                        tickFormatter={formatCompact}
+                      />
                       <Tooltip
                         contentStyle={{ backgroundColor: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', fontSize: '12px' }}
                         formatter={(value) => [`${value.toLocaleString('fr-FR')} FCFA`, 'Total']}

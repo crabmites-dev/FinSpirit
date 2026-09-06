@@ -15,6 +15,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useCurrentUser } from './useCurrentUser.js';
 import NotificationPanel from './NotificationPanel.jsx';
+import { formatCompact } from './formatUtils.js';
 
 // ── Utilitaires ──────────────────────────────────────────────────
 const getGreeting = () => {
@@ -417,14 +418,14 @@ function Transactions() {
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
 
             {/* Area Chart */}
-            <div className="bg-white rounded-2xl border border-slate-200/60 p-6 shadow-sm lg:col-span-3 flex flex-col gap-4">
+            <div className="bg-white rounded-2xl border border-slate-200/60 p-4 sm:p-6 shadow-sm lg:col-span-3 flex flex-col gap-4">
               <div>
                 <h3 className="font-black text-slate-900 text-sm">Flux financiers</h3>
                 <p className="text-slate-400 text-xs mt-0.5">Revenus vs dépenses sur 12 mois</p>
               </div>
               <div className="h-[180px]">
                 <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={TREND} margin={{ top:10, right:10, left:-20, bottom:0 }}>
+                  <AreaChart data={TREND} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                     <defs>
                       <linearGradient id="gi" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="5%" stopColor="#6366f1" stopOpacity={0.2}/><stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
@@ -435,7 +436,14 @@ function Transactions() {
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                     <XAxis dataKey="month" axisLine={false} tickLine={false} stroke="#94a3b8" style={{fontSize:'11px',fontWeight:600}} />
-                    <YAxis axisLine={false} tickLine={false} stroke="#94a3b8" style={{fontSize:'11px',fontWeight:600}} />
+                    <YAxis
+                      axisLine={false}
+                      tickLine={false}
+                      stroke="#94a3b8"
+                      style={{fontSize:'11px',fontWeight:600}}
+                      width={48}
+                      tickFormatter={formatCompact}
+                    />
                     <Tooltip contentStyle={{backgroundColor:'#fff',borderRadius:'12px',border:'1px solid #e2e8f0',fontSize:'12px',fontWeight:600}}
                       formatter={(v,n) => [`${fmt(v)} FCFA`, n==='income'?'Revenus':'Dépenses']} />
                     <Area type="monotone" dataKey="income" stroke="#6366f1" strokeWidth={2.5} fill="url(#gi)" />
@@ -450,7 +458,7 @@ function Transactions() {
             </div>
 
             {/* Bar chart par catégorie */}
-            <div className="bg-white rounded-2xl border border-slate-200/60 p-6 shadow-sm lg:col-span-2 flex flex-col gap-4">
+            <div className="bg-white rounded-2xl border border-slate-200/60 p-4 sm:p-6 shadow-sm lg:col-span-2 flex flex-col gap-4">
               <div>
                 <h3 className="font-black text-slate-900 text-sm">Top dépenses</h3>
                 <p className="text-slate-400 text-xs mt-0.5">Par catégorie</p>
@@ -460,10 +468,10 @@ function Transactions() {
               ) : (
                 <div className="h-[180px]">
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={catData} margin={{top:5,right:5,left:-25,bottom:0}} layout="vertical">
+                    <BarChart data={catData} margin={{top:5,right:15,left:0,bottom:0}} layout="vertical">
                       <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" />
-                      <XAxis type="number" axisLine={false} tickLine={false} stroke="#94a3b8" style={{fontSize:'10px',fontWeight:600}} tickFormatter={v=>`${v/1000}k`} />
-                      <YAxis type="category" dataKey="name" axisLine={false} tickLine={false} stroke="#94a3b8" style={{fontSize:'10px',fontWeight:700}} width={70} />
+                      <XAxis type="number" axisLine={false} tickLine={false} stroke="#94a3b8" style={{fontSize:'10px',fontWeight:600}} tickFormatter={formatCompact} />
+                      <YAxis type="category" dataKey="name" axisLine={false} tickLine={false} stroke="#94a3b8" style={{fontSize:'10px',fontWeight:700}} width={75} />
                       <Tooltip contentStyle={{borderRadius:'10px',fontSize:'12px',border:'1px solid #e2e8f0'}} formatter={v=>[`${fmt(v)} FCFA`]} />
                       <Bar dataKey="value" radius={[0,6,6,0]} barSize={14}>
                         {catData.map((_, i) => <Cell key={i} fill={CAT_COLORS[i % CAT_COLORS.length]} />)}

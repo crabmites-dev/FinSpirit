@@ -15,6 +15,7 @@ import { useToast } from './ToastContext.jsx';
 import CapBudgetLogo from './CapBudgetLogo.jsx';
 import { useCurrentUser } from './useCurrentUser.js';
 import NotificationPanel from './NotificationPanel.jsx';
+import { formatCompact } from './formatUtils.js';
 
 const PIE_COLORS = [
   '#6366f1', '#f43f5e', '#10b981', '#f59e0b', '#8b5cf6',
@@ -527,7 +528,7 @@ export default function Rapports() {
                 </div>
 
                 {/* Area Chart - Évolution journalière */}
-                <div className="bg-white rounded-2xl border border-slate-200/60 p-6 shadow-sm lg:col-span-2 flex flex-col gap-4">
+                <div className="bg-white rounded-2xl border border-slate-200/60 p-4 sm:p-6 shadow-sm lg:col-span-2 flex flex-col gap-4">
                   <div className="flex items-center justify-between">
                     <div>
                       <h3 className="font-black text-slate-900 text-sm">Évolution journalière du mois</h3>
@@ -547,7 +548,7 @@ export default function Rapports() {
 
                   <div className="h-[280px] w-full">
                     <ResponsiveContainer width="100%" height="100%">
-                      <AreaChart data={report.dailyTrend} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+                      <AreaChart data={report.dailyTrend} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                         <defs>
                           <linearGradient id="colorInc" x1="0" y1="0" x2="0" y2="1">
                             <stop offset="5%" stopColor="#10b981" stopOpacity={0.2} />
@@ -572,6 +573,8 @@ export default function Rapports() {
                           tickLine={false}
                           stroke="#94a3b8"
                           style={{ fontSize: '11px', fontWeight: 600 }}
+                          width={48}
+                          tickFormatter={formatCompact}
                         />
                         <Tooltip
                           contentStyle={{ backgroundColor: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', fontSize: '12px' }}

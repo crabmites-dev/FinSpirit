@@ -16,6 +16,7 @@ import { useToast } from './ToastContext.jsx';
 import NotificationPanel from './NotificationPanel.jsx';
 import CapBudgetLogo from './CapBudgetLogo.jsx';
 import { useCurrentUser } from './useCurrentUser.js';
+import { formatCompact } from './formatUtils.js';
 
 const trendDataFake = [
   { date: 'Jan', income: 4400, expense: 2400 },
@@ -444,7 +445,7 @@ function Dashboard() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
             {/* Area Chart */}
-            <div className="bg-white rounded-2xl border border-slate-200/60 p-6 shadow-sm lg:col-span-2 flex flex-col gap-4">
+            <div className="bg-white rounded-2xl border border-slate-200/60 p-4 sm:p-6 shadow-sm lg:col-span-2 flex flex-col gap-4">
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="font-black text-slate-900 text-sm">Évolution financière</h3>
@@ -466,7 +467,7 @@ function Dashboard() {
                   </div>
                 ) : (
                   <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart key={period} data={trendDataToUse} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                    <AreaChart key={period} data={trendDataToUse} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                       <defs>
                         <linearGradient id="gInc" x1="0" y1="0" x2="0" y2="1">
                           <stop offset="5%" stopColor="#6366f1" stopOpacity={0.18} />
@@ -479,7 +480,14 @@ function Dashboard() {
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                       <XAxis dataKey="date" axisLine={false} tickLine={false} stroke="#94a3b8" style={{ fontSize: '11px', fontWeight: 600 }} />
-                      <YAxis axisLine={false} tickLine={false} stroke="#94a3b8" style={{ fontSize: '11px', fontWeight: 600 }} />
+                      <YAxis
+                        axisLine={false}
+                        tickLine={false}
+                        stroke="#94a3b8"
+                        style={{ fontSize: '11px', fontWeight: 600 }}
+                        width={48}
+                        tickFormatter={formatCompact}
+                      />
                       <Tooltip contentStyle={{ backgroundColor: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', fontSize: '12px', fontWeight: 600 }}
                         formatter={(val, name) => [`${Number(val).toLocaleString('fr-FR')} FCFA`, name === 'income' ? 'Revenus' : 'Dépenses']} />
                       <Area type="monotone" dataKey="income" stroke="#6366f1" strokeWidth={2.5} fill="url(#gInc)" />
