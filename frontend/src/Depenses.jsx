@@ -506,11 +506,14 @@ function Depenses() {  // ✅ Fix 1 — renommé Depenses (pas Revenus)
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-rose-500 cursor-pointer transition-all">
                   <option value="Logement">🏠 Logement & Charges</option>
                   <option value="Alimentation">🛒 Alimentation & Courses</option>
+                  <option value="Courses">🛒 Courses alimentaires</option>
                   <option value="Transport">🚗 Transports & Véhicule</option>
                   <option value="Factures">⚡ Factures & Abonnements</option>
-                  <option value="Loisirs">🎉 Loisirs & Restaurants</option>
+                  <option value="Loisirs">🎉 Loisirs & Sorties</option>
+                  <option value="Restaurants">🍽️ Restaurants</option>
                   <option value="Santé">🩺 Santé & Bien-être</option>
                   <option value="Shopping">🛍️ Shopping & Équipement</option>
+                  <option value="Vêtements">👗 Vêtements & Mode</option>
                   <option value="Autre">💸 Autre dépense</option>
                 </select>
               </div>

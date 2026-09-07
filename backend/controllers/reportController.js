@@ -125,35 +125,54 @@ export async function computeMonthlyReportData(userId, targetYear, targetMonth) 
   }
 
   // 6. Respect des budgets pour ce mois
-  // Limites des budgets enregistrés + dépenses réelles du mois pour cette catégorie
+  // Plafonds des budgets enregistrés + dépenses réelles (transactions du mois avec alias de catégories ou montant enregistré directement)
   const budgetsRes = await pool.query(`
     SELECT
       b.id,
       b.name,
       b.category,
       b.budget_limit::float AS limit,
-      COALESCE(t.spent, 0)::float AS spent
+      COALESCE(b.spent, 0)::float AS budget_spent,
+      COALESCE((
+        SELECT SUM(t.amount)
+        FROM transactions t
+        WHERE t.user_id = b.user_id
+          AND t.type = 'expense'
+          AND EXTRACT(YEAR FROM t.date) = $2
+          AND EXTRACT(MONTH FROM t.date) = $3
+          AND (
+            LOWER(t.category) = LOWER(b.category)
+            OR LOWER(t.category) = LOWER(b.name)
+            OR (LOWER(b.category) IN ('courses', 'alimentation', 'nourriture') AND LOWER(t.category) IN ('courses', 'alimentation', 'nourriture'))
+            OR (LOWER(b.category) IN ('vêtements', 'vetements', 'shopping', 'mode') AND LOWER(t.category) IN ('vêtements', 'vetements', 'shopping', 'mode'))
+            OR (LOWER(b.category) IN ('restaurants', 'restaurant', 'loisirs', 'sorties') AND LOWER(t.category) IN ('restaurants', 'restaurant', 'loisirs', 'sorties'))
+            OR (LOWER(b.category) IN ('factures', 'logement', 'loyer') AND LOWER(t.category) IN ('factures', 'logement', 'loyer'))
+            OR (LOWER(b.category) IN ('santé', 'sante', 'médical', 'medical') AND LOWER(t.category) IN ('santé', 'sante', 'médical', 'medical'))
+            OR (LOWER(b.category) IN ('transport', 'déplacement', 'deplacement', 'carburant') AND LOWER(t.category) IN ('transport', 'déplacement', 'deplacement', 'carburant'))
+          )
+      ), 0)::float AS tx_spent
     FROM budgets b
-    LEFT JOIN (
-      SELECT category, SUM(amount) AS spent
-      FROM transactions
-      WHERE user_id = $1
-        AND type = 'expense'
-        AND EXTRACT(YEAR FROM date) = $2
-        AND EXTRACT(MONTH FROM date) = $3
-      GROUP BY category
-    ) t ON LOWER(b.category) = LOWER(t.category)
     WHERE b.user_id = $1
-    ORDER BY b.created_at DESC
+    ORDER BY b.created_at DESC NULLS LAST, b.id DESC
   `, [userId, y, m]);
 
   const budgets = budgetsRes.rows.map(b => {
-    const percent = b.limit > 0 ? Math.round((b.spent / b.limit) * 100) : 0;
+    // Si des transactions spécifiques existent pour ce mois, on prend le montant réel constaté,
+    // avec repli sur le montant enregistré sur le budget si aucune transaction directe n'est catégorisée ce mois-là.
+    const spent = b.tx_spent > 0
+      ? Math.max(b.tx_spent, b.budget_spent)
+      : (b.budget_spent > 0 ? b.budget_spent : 0);
+    const limit = Number(b.limit) || 0;
+    const percent = limit > 0 ? Math.round((spent / limit) * 100) : 0;
     return {
-      ...b,
+      id: b.id,
+      name: b.name,
+      category: b.category,
+      limit,
+      spent,
       percent,
-      remaining: Math.max(0, b.limit - b.spent),
-      isOver: b.spent > b.limit
+      remaining: Math.max(0, limit - spent),
+      isOver: spent > limit
     };
   });
 
@@ -359,22 +378,23 @@ export async function sendMonthlyEmailToUser(userId, year, month) {
  * Envoi déclenché à la demande depuis l'application.
  */
 export const sendMonthlyEmail = async (req, res) => {
-  const userId = req.user.id;
+  const userId = req.user?.id;
+  if (!userId) {
+    return res.status(401).json({ message: 'Utilisateur non authentifié' });
+  }
+
   const now = new Date();
 
-  // Par défaut le mois précédent ou le mois spécifié
-  let year = parseInt(req.body.year, 10);
-  let month = parseInt(req.body.month, 10);
+  // Accepte le mois et l'année depuis le body (POST) ou les query params (GET/fallback)
+  const targetYear = req.body?.year ?? req.query?.year;
+  const targetMonth = req.body?.month ?? req.query?.month;
+  let year = parseInt(targetYear, 10);
+  let month = parseInt(targetMonth, 10);
 
-  if (!year || !month) {
-    // Par défaut mois précédent
-    if (now.getMonth() === 0) {
-      year = now.getFullYear() - 1;
-      month = 12;
-    } else {
-      year = now.getFullYear();
-      month = now.getMonth(); // 0-indexed month = mois précédent en 1-indexed
-    }
+  if (isNaN(year) || isNaN(month) || month < 1 || month > 12) {
+    // Par défaut mois actuel s'il est spécifié, ou mois précédent
+    year = now.getFullYear();
+    month = now.getMonth() + 1;
   }
 
   try {

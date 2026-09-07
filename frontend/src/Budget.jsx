@@ -37,13 +37,16 @@ const getStatusLabel = (percent) => {
 
 // ── Icônes catégories ────────────────────────────────────────────
 const CATEGORY_ICONS = {
+  'Alimentation': '🛒',
   'Courses': '🛒',
   'Transport': '🚗',
-  'Loisirs': '🎮',
-  'Santé': '💊',
-  'Restaurants': '🍽️',
+  'Shopping': '🛍️',
   'Vêtements': '👗',
   'Logement': '🏠',
+  'Factures': '⚡',
+  'Loisirs': '🎮',
+  'Restaurants': '🍽️',
+  'Santé': '💊',
   'Éducation': '📚',
   'Épargne': '🐷',
   'Autre': '📦',
