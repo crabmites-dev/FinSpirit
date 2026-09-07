@@ -213,7 +213,7 @@ export function buildMonthlyReportEmail({
                 <tr>
                   <td align="left" style="vertical-align: middle;">
                     <div style="font-size: 18px; font-weight: 800; letter-spacing: 1px; color: #ffffff; text-transform: uppercase;">
-                      CAPBUDGET
+                      FINSPIRIT
                     </div>
                     <div style="font-size: 11px; color: #94a3b8; letter-spacing: 0.5px; text-transform: uppercase; margin-top: 2px;">
                       Gestion Financière & Analytique
@@ -319,7 +319,7 @@ export function buildMonthlyReportEmail({
               <table width="100%" cellpadding="0" cellspacing="0">
                 <tr>
                   <td>
-                    <strong>CapBudget Financial Services</strong> • Document récapitulatif mensuel généré automatiquement.<br>
+                    <strong>FinSpirit Financial Services</strong> • Document récapitulatif mensuel généré automatiquement.<br>
                     Ce relevé est destiné exclusivement à ${username || 'son titulaire'}.
                   </td>
                   <td align="right" style="vertical-align: top; color: #9ca3af; font-size: 10px;">

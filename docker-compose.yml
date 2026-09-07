@@ -1,10 +1,10 @@
 services:
-  # --- BACKEND (Node.js / Express — CapBudget) ---
+  # --- BACKEND (Node.js / Express — FinSpirit) ---
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: capbudget_backend
+    container_name: finspirit_backend
     restart: unless-stopped
     ports: 
       - "5000:5000"
@@ -15,12 +15,12 @@ services:
       NODE_ENV: development
       # DATABASE_URL, JWT_SECRET, EMAIL_USER, EMAIL_PASS → chargés depuis backend/.env (Neon PostgreSQL)
 
-  # --- FRONTEND (React / Vite — CapBudget) ---
+  # --- FRONTEND (React / Vite — FinSpirit) ---
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: capbudget_frontend
+    container_name: finspirit_frontend
     restart: unless-stopped
     ports:
       - "5173:5173"

@@ -3,7 +3,7 @@ import api from './api.js';
 import { Mail, Send, ArrowLeft } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useToast } from './ToastContext.jsx';
-import { FormBrandHeader } from './CapBudgetLogo.jsx';
+import { FormBrandHeader } from './FinSpiritLogo.jsx';
 
 function ForgotPassword() {
   const [email, setEmail] = useState('');

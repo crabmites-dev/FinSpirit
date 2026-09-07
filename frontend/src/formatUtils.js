@@ -1,6 +1,5 @@
 /**
- * Formate un nombre de manière compacte pour les axes de graphiques (ex: 50k, 150k, 1.2M).
- * Évite les débordements et coupures de texte sur mobile.
+ * Formate un nombre de manière compacte pour les axes de graphiques (ex: 50k, 1,5M).
  */
 export const formatCompact = (val) => {
   if (val === null || val === undefined || isNaN(val)) return '0';
@@ -8,16 +7,27 @@ export const formatCompact = (val) => {
   if (num === 0) return '0';
   const abs = Math.abs(num);
   if (abs >= 1_000_000_000) {
-    const formatted = (num / 1_000_000_000).toFixed(abs % 1_000_000_000 === 0 ? 0 : 1);
-    return `${formatted}Md`;
+    const formatted = (num / 1_000_000_000).toLocaleString('fr-FR', { maximumFractionDigits: 1 });
+    return `${formatted} Md`;
   }
   if (abs >= 1_000_000) {
-    const formatted = (num / 1_000_000).toFixed(abs % 1_000_000 === 0 ? 0 : 1);
-    return `${formatted}M`;
+    const formatted = (num / 1_000_000).toLocaleString('fr-FR', { maximumFractionDigits: 1 });
+    return `${formatted} M`;
   }
   if (abs >= 1_000) {
-    const formatted = (num / 1_000).toFixed(abs % 1_000 === 0 ? 0 : 1);
-    return `${formatted}k`;
+    const formatted = (num / 1_000).toLocaleString('fr-FR', { maximumFractionDigits: 0 });
+    return `${formatted} k`;
   }
-  return num.toString();
+  return num.toLocaleString('fr-FR');
+};
+
+/** Marge gauche suffisante pour afficher les labels Y sans coupure */
+export const CHART_MARGIN = { top: 10, right: 12, left: 14, bottom: 0 };
+
+export const CHART_Y_AXIS_PROPS = {
+  axisLine: false,
+  tickLine: false,
+  width: 62,
+  tick: { fill: '#94a3b8', fontSize: 11, fontWeight: 600 },
+  tickFormatter: formatCompact,
 };

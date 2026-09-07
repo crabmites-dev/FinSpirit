@@ -1,4 +1,4 @@
--- Schéma CapBudget — compatible Neon PostgreSQL
+-- Schéma FinSpirit — compatible Neon PostgreSQL
 -- Exécuter via : npm run db:init
 
 CREATE TABLE IF NOT EXISTS users (

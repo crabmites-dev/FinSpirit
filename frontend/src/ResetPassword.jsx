@@ -3,7 +3,7 @@ import { useLocation, useNavigate, Link } from 'react-router-dom';
 import api from './api.js';
 import { Mail, KeyRound, Check, X, ArrowLeft, RefreshCw, ShieldCheck } from 'lucide-react';
 import { useToast } from './ToastContext.jsx';
-import { FormBrandHeader } from './CapBudgetLogo.jsx';
+import { FormBrandHeader } from './FinSpiritLogo.jsx';
 import PasswordInput from './PasswordInput.jsx';
 
 function ResetPassword() {

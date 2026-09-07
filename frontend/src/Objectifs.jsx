@@ -12,7 +12,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useToast } from './ToastContext.jsx';
 import { useCurrentUser } from './useCurrentUser.js';
-import CapBudgetLogo from './CapBudgetLogo.jsx';
+import FinSpiritLogo from './FinSpiritLogo.jsx';
 import NotificationPanel from './NotificationPanel.jsx';
 
 // ── Utilitaires ──────────────────────────────────────────────────
@@ -336,7 +336,7 @@ function Objectifs() {
         ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
         <div className="flex flex-col gap-8">
           <div className="flex items-center justify-between px-1">
-          <CapBudgetLogo size="md" showText />
+          <FinSpiritLogo size="md" showText />
             <button onClick={() => setIsMobileMenuOpen(false)} className="md:hidden text-slate-500 cursor-pointer">
               <X className="w-5 h-5" />
             </button>

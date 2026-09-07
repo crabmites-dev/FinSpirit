@@ -15,7 +15,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useCurrentUser } from './useCurrentUser.js';
 import NotificationPanel from './NotificationPanel.jsx';
-import { formatCompact } from './formatUtils.js';
+import { formatCompact, CHART_MARGIN, CHART_Y_AXIS_PROPS } from './formatUtils.js';
 
 // ── Utilitaires ──────────────────────────────────────────────────
 const getGreeting = () => {
@@ -423,9 +423,9 @@ function Transactions() {
                 <h3 className="font-black text-slate-900 text-sm">Flux financiers</h3>
                 <p className="text-slate-400 text-xs mt-0.5">Revenus vs dépenses sur 12 mois</p>
               </div>
-              <div className="h-[180px]">
+              <div className="h-[180px] overflow-visible">
                 <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={TREND} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                  <AreaChart data={TREND} margin={CHART_MARGIN}>
                     <defs>
                       <linearGradient id="gi" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="5%" stopColor="#6366f1" stopOpacity={0.2}/><stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
@@ -436,14 +436,7 @@ function Transactions() {
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                     <XAxis dataKey="month" axisLine={false} tickLine={false} stroke="#94a3b8" style={{fontSize:'11px',fontWeight:600}} />
-                    <YAxis
-                      axisLine={false}
-                      tickLine={false}
-                      stroke="#94a3b8"
-                      style={{fontSize:'11px',fontWeight:600}}
-                      width={48}
-                      tickFormatter={formatCompact}
-                    />
+                    <YAxis {...CHART_Y_AXIS_PROPS} />
                     <Tooltip contentStyle={{backgroundColor:'#fff',borderRadius:'12px',border:'1px solid #e2e8f0',fontSize:'12px',fontWeight:600}}
                       formatter={(v,n) => [`${fmt(v)} FCFA`, n==='income'?'Revenus':'Dépenses']} />
                     <Area type="monotone" dataKey="income" stroke="#6366f1" strokeWidth={2.5} fill="url(#gi)" />

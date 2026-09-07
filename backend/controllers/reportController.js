@@ -332,9 +332,9 @@ export async function sendMonthlyEmailToUser(userId, year, month) {
     throw new Error('Configuration e-mail manquante : EMAIL_USER ou EMAIL_PASS n\'est pas défini sur le serveur.');
   }
 
-  const mailSubject = `CapBudget — Relevé financier de ${reportData.monthName} ${reportData.year}`;
+  const mailSubject = `FinSpirit — Relevé financier de ${reportData.monthName} ${reportData.year}`;
   await transporter.sendMail({
-    from: `"CapBudget" <${process.env.EMAIL_USER}>`,
+    from: `"FinSpirit" <${process.env.EMAIL_USER}>`,
     to: user.email,
     subject: mailSubject,
     html: htmlContent

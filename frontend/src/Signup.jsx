@@ -3,7 +3,7 @@ import api from './api.js';
 import { User, Mail, Check, X, ArrowRight } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useToast } from './ToastContext.jsx';
-import { FormBrandHeader } from './CapBudgetLogo.jsx';
+import { FormBrandHeader } from './FinSpiritLogo.jsx';
 import PasswordInput from './PasswordInput.jsx';
 
 function Signup() {

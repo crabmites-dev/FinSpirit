@@ -14,9 +14,9 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useToast } from './ToastContext.jsx';
 import NotificationPanel from './NotificationPanel.jsx';
-import CapBudgetLogo from './CapBudgetLogo.jsx';
+import FinSpiritLogo from './FinSpiritLogo.jsx';
 import { useCurrentUser } from './useCurrentUser.js';
-import { formatCompact } from './formatUtils.js';
+import { CHART_MARGIN, CHART_Y_AXIS_PROPS } from './formatUtils.js';
 
 const trendDataFake = [
   { date: 'Jan', income: 4400, expense: 2400 },
@@ -306,7 +306,7 @@ function Dashboard() {
         ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
         <div className="flex flex-col gap-8">
           <div className="flex items-center justify-between px-1">
-            <CapBudgetLogo size="md" showText />
+            <FinSpiritLogo size="md" showText />
             <button onClick={() => setIsMobileMenuOpen(false)} className="md:hidden text-slate-500 hover:text-indigo-600 cursor-pointer">
               <X className="w-5 h-5" />
             </button>
@@ -460,14 +460,14 @@ function Dashboard() {
                   ))}
                 </div>
               </div>
-              <div className="h-[220px]">
+              <div className="h-[220px] overflow-visible">
                 {trendDataToUse.length === 0 ? (
                   <div className="flex items-center justify-center h-full">
                     <p className="text-xs text-slate-400 font-semibold">Aucune donnée à afficher</p>
                   </div>
                 ) : (
                   <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart key={period} data={trendDataToUse} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                    <AreaChart key={period} data={trendDataToUse} margin={CHART_MARGIN}>
                       <defs>
                         <linearGradient id="gInc" x1="0" y1="0" x2="0" y2="1">
                           <stop offset="5%" stopColor="#6366f1" stopOpacity={0.18} />
@@ -480,14 +480,7 @@ function Dashboard() {
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                       <XAxis dataKey="date" axisLine={false} tickLine={false} stroke="#94a3b8" style={{ fontSize: '11px', fontWeight: 600 }} />
-                      <YAxis
-                        axisLine={false}
-                        tickLine={false}
-                        stroke="#94a3b8"
-                        style={{ fontSize: '11px', fontWeight: 600 }}
-                        width={48}
-                        tickFormatter={formatCompact}
-                      />
+                      <YAxis {...CHART_Y_AXIS_PROPS} />
                       <Tooltip contentStyle={{ backgroundColor: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', fontSize: '12px', fontWeight: 600 }}
                         formatter={(val, name) => [`${Number(val).toLocaleString('fr-FR')} FCFA`, name === 'income' ? 'Revenus' : 'Dépenses']} />
                       <Area type="monotone" dataKey="income" stroke="#6366f1" strokeWidth={2.5} fill="url(#gInc)" />

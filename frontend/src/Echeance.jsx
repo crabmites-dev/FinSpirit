@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from './ToastContext.jsx';
-import CapBudgetLogo from './CapBudgetLogo.jsx';
+import FinSpiritLogo from './FinSpiritLogo.jsx';
 import { useCurrentUser } from './useCurrentUser.js';
 import NotificationPanel from './NotificationPanel.jsx';
 
@@ -381,7 +381,7 @@ function Echeances() {
         ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
         <div className="flex flex-col gap-8">
           <div className="flex items-center justify-between px-1">
-            <CapBudgetLogo size="md" showText />
+            <FinSpiritLogo size="md" showText />
             <button onClick={() => setIsMobileMenuOpen(false)} className="md:hidden text-slate-500 cursor-pointer"><X className="w-5 h-5" /></button>
           </div>
 

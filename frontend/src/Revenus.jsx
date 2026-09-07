@@ -10,10 +10,10 @@ import {
 import PastMonthsSection from './PastMonthsSection.jsx'; 
 import { useNavigate } from 'react-router-dom';
 import { useToast } from './ToastContext.jsx';
-import CapBudgetLogo from './CapBudgetLogo.jsx';
+import FinSpiritLogo from './FinSpiritLogo.jsx';
 import { useCurrentUser } from './useCurrentUser.js';
 import NotificationPanel from './NotificationPanel.jsx';
-import { formatCompact } from './formatUtils.js';
+import { CHART_MARGIN, CHART_Y_AXIS_PROPS } from './formatUtils.js';
 
 const COLORS = ['#4f46e5', '#10b981', '#34d399', '#38bdf8'];
 
@@ -200,7 +200,7 @@ function Revenus() {
         <div className="flex flex-col gap-8">
           {/* Logo */}
           <div className="flex items-center justify-between px-1">
-            <CapBudgetLogo size="md" showText />
+            <FinSpiritLogo size="md" showText />
             <button onClick={() => setIsMobileMenuOpen(false)} className="md:hidden text-slate-500 hover:text-slate-900 cursor-pointer">
               <X className="w-5 h-5" />
             </button>
@@ -326,24 +326,17 @@ function Revenus() {
                 <h4 className="font-bold text-slate-900 text-sm">Évolution par catégories</h4>
                 <p className="text-slate-400 text-[11px] mt-0.5">Visualisation globale de vos sources de gains</p>
               </div>
-              <div className="w-full h-[180px]">
+              <div className="w-full h-[180px] overflow-visible">
                 {graphDataToUse.length === 0 ? (
                   <div className="flex items-center justify-center h-full">
                     <p className="text-xs text-slate-400 font-semibold">Aucune donnée à afficher</p>
                   </div>
                 ) : (
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={graphDataToUse} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                    <BarChart data={graphDataToUse} margin={CHART_MARGIN}>
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                       <XAxis dataKey="name" axisLine={false} tickLine={false} stroke="#94a3b8" style={{ fontSize: '11px', fontWeight: 600 }} />
-                      <YAxis
-                        axisLine={false}
-                        tickLine={false}
-                        stroke="#94a3b8"
-                        style={{ fontSize: '11px', fontWeight: 600 }}
-                        width={48}
-                        tickFormatter={formatCompact}
-                      />
+                      <YAxis {...CHART_Y_AXIS_PROPS} />
                       <Tooltip
                         contentStyle={{ backgroundColor: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', fontSize: '12px' }}
                         formatter={(value) => [`${value.toLocaleString('fr-FR')} FCFA`, 'Total']}

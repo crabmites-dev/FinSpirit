@@ -1,6 +1,6 @@
-# CapBudget 
+# FinSpirit 
 
-**CapBudget** est une application web de gestion de budget personnelle. Elle permet de suivre ses revenus et dépenses, de définir des budgets par catégorie, de planifier des objectifs d'épargne et de gérer ses échéances (loyer, factures, abonnements).
+**FinSpirit** est une application web de gestion de budget personnelle. Elle permet de suivre ses revenus et dépenses, de définir des budgets par catégorie, de planifier des objectifs d'épargne et de gérer ses échéances (loyer, factures, abonnements).
 
 L'application est pensée pour un usage en **FCFA** et propose une interface moderne, responsive (desktop + mobile).
 
@@ -66,7 +66,7 @@ L'application est pensée pour un usage en **FCFA** et propose une interface mod
 ### UX / UI
 - Design moderne avec **Tailwind CSS 4** et **DaisyUI**
 - Toasts de notification globaux
-- Logo **CapBudget** personnalisé
+- Logo **FinSpirit** personnalisé
 - Champ mot de passe avec bouton afficher / masquer
 - Optimisation mobile (pas de zoom intempestif sur les champs de formulaire iOS)
 
@@ -110,7 +110,7 @@ L'application est pensée pour un usage en **FCFA** et propose une interface mod
 ## Structure du projet
 
 ```
-CapBudget/
+FinSpirit/
 ├── backend/
 │   ├── config/
 │   │   ├── db.js           # Connexion PostgreSQL (Neon)
@@ -134,7 +134,7 @@ CapBudget/
 │   │   ├── Budget.jsx / Objectifs.jsx / Echeance.jsx
 │   │   ├── Signin.jsx / Signup.jsx
 │   │   ├── ForgotPassword.jsx / ResetPassword.jsx
-│   │   ├── ToastContext.jsx / CapBudgetLogo.jsx / PasswordInput.jsx
+│   │   ├── ToastContext.jsx / FinSpiritLogo.jsx / PasswordInput.jsx
 │   │   └── index.css
 │   ├── Dockerfile
 │   └── package.json
@@ -379,7 +379,7 @@ L'utilisateur peut les supprimer depuis le **Dashboard** via le bandeau « Suppr
 
 ## Auteur
 
-**crabmites-dev** — Projet CapBudget (Gestion de dépenses)
+**crabmites-dev** — Projet FinSpirit (Gestion de dépenses)
 
 ---
 
