@@ -38,11 +38,22 @@ export async function checkAndSendPendingMonthlyReports() {
     console.log(`📨 [Scheduler Mensuel] ${pendingUsers.rows.length} rapport(s) à envoyer pour ${targetMonth}/${targetYear}...`);
 
     for (const user of pendingUsers.rows) {
-      try {
-        await sendMonthlyEmailToUser(user.id, targetYear, targetMonth);
-        console.log(`  ✓ Rapport de ${targetMonth}/${targetYear} envoyé automatiquement à ${user.email}`);
-      } catch (err) {
-        console.error(`  ⚠️ Échec de l'envoi du rapport mensuel pour ${user.email}:`, err.message);
+      let sent = false;
+      let attempts = 0;
+      while (!sent && attempts < 3) {
+        attempts++;
+        try {
+          await sendMonthlyEmailToUser(user.id, targetYear, targetMonth);
+          console.log(`  ✓ Rapport de ${targetMonth}/${targetYear} envoyé automatiquement à ${user.email}`);
+          sent = true;
+        } catch (err) {
+          if (attempts < 3) {
+            console.warn(`  ⚠️ Tentative ${attempts} échouée pour ${user.email} (${err.message}). Nouvelle tentative dans 5s...`);
+            await new Promise(resolve => setTimeout(resolve, 5000));
+          } else {
+            console.error(`  ⚠️ Échec définitif de l'envoi du rapport mensuel pour ${user.email}:`, err.message);
+          }
+        }
       }
     }
   } catch (error) {
