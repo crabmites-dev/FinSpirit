@@ -53,7 +53,7 @@ function ForgotPassword() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full flex justify-center items-center gap-2 bg-slate-900 hover:bg-slate-700 text-white font-semibold py-3 px-3 rounded-xl shadow-md shadow-indigo-600/10 active:scale-[0.99] transition-all duration-150 cursor-pointer mt-4 disabled:opacity-60"
+            className="w-full flex justify-center items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 px-3 rounded-xl shadow-md shadow-indigo-600/10 active:scale-[0.99] transition-all duration-150 cursor-pointer mt-4 disabled:opacity-60"
           >
             {loading ? (
               <span className="loading loading-spinner loading-sm"></span>

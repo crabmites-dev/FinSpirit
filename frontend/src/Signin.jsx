@@ -47,7 +47,7 @@ function Signin() {
         <form onSubmit={handleSubmit} className="text-left space-y-4">
           <div className="form-control space-y-2">
             <label className="text-slate-700 text-xs font-bold uppercase tracking-wider pl-0.5 mb-2">Adresse e-mail</label>
-            <div className="flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus-within:border-indigo-600 focus-within:bg-white focus-within:ring-4 focus-within:ring-indigo-600 transition-all duration-200">
+            <div className="flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus-within:border-indigo-600 focus-within:bg-white focus-within:ring-4 focus-within:ring-indigo-600/10 transition-all duration-200">
               <Mail className="text-slate-400 w-4 h-4" />
               <input
                 type="email"
