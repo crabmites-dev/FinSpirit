@@ -24,11 +24,13 @@ html, body, #root {
   margin: 0;
   width: 100%;
   max-width: 100%;
+  min-height: 100%;
   overflow-x: hidden;
 }
 
 body {
-  overscroll-behavior-y: contain;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 @media (max-width: 768px) {

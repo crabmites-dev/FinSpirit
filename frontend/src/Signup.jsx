@@ -48,8 +48,9 @@ function Signup() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen w-screen bg-gradient-to-b from-slate-50 to-slate-100 font-sans m-0 overflow-y-auto antialiased">
-      <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.02)] w-full max-w-[420px] text-center border border-slate-200/60 my-auto mx-4 animate-fade-in-up">
+    <div className="min-h-screen w-full overflow-y-auto bg-gradient-to-b from-slate-50 to-slate-100 font-sans antialiased">
+      <div className="flex justify-center px-4 py-8 sm:py-10">
+        <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.02)] w-full max-w-[420px] text-center border border-slate-200/60 animate-fade-in-up">
         <FormBrandHeader
           title="Créer un compte"
           subtitle="Dites adieu aux fins de mois stressantes. Gérez vos finances en toute sérénité."
@@ -58,11 +59,11 @@ function Signup() {
         <form onSubmit={handleSubmit} className="text-left space-y-3.5">
           <div className="form-control space-y-2">
             <label className="text-slate-700 text-xs font-bold uppercase tracking-wider pl-0.5">Nom d'utilisateur</label>
-            <div className="flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus-within:border-slate-900 focus-within:bg-white focus-within:ring-4 focus-within:ring-indigo-600/10 transition-all duration-200">
+            <div className="flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus-within:border-indigo-600 focus-within:bg-white focus-within:ring-4 focus-within:ring-indigo-600/10 transition-all duration-200">
               <User className="text-slate-400 w-5 h-5" />
               <input
                 type="text"
-                placeholder="Ex: AlphaDev"
+                placeholder="Ex: Mariame"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 className="bg-transparent text-slate-900 outline-none w-full text-bold text-sm placeholder:text-slate-400"
@@ -73,7 +74,7 @@ function Signup() {
 
           <div className="form-control space-y-2">
             <label className="text-slate-700 text-xs font-bold uppercase tracking-wider pl-0.5">Adresse e-mail</label>
-            <div className="flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus-within:border-slate-900 focus-within:bg-white focus-within:ring-4 focus-within:ring-indigo-600/10 transition-all duration-200">
+            <div className="flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus-within:border-indigo-600 focus-within:bg-white focus-within:ring-4 focus-within:ring-indigo-600/10 transition-all duration-200">
               <Mail className="text-slate-400 w-5 h-5" />
               <input
                 type="email"
@@ -129,7 +130,7 @@ function Signup() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full flex justify-center items-center gap-2 bg-slate-900 hover:bg-slate-700 disabled:bg-slate-500 text-white font-semibold py-3 px-3 rounded-xl shadow-md shadow-indigo-600/10 active:scale-[0.99] transition-all duration-150 cursor-pointer mt-4"
+            className="w-full flex justify-center items-center gap-2 bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-500 text-white font-semibold py-3 px-3 rounded-xl shadow-md shadow-indigo-600/10 active:scale-[0.99] transition-all duration-150 cursor-pointer mt-4"
           >
             {loading ? (
               <span className="loading loading-spinner loading-sm"></span>
@@ -144,10 +145,11 @@ function Signup() {
 
         <p className="text-grey-100 mt-8 text-sm font-medium">
           Déjà membre ?{' '}
-          <Link to="/login" className="text-slate-700 font-bold hover:underline transition-colors ml-2">
+          <Link to="/login" className="text-indigo-600 font-bold hover:underline transition-colors ml-2">
             Se connecter
           </Link>
         </p>
+        </div>
       </div>
     </div>
   );

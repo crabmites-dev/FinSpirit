@@ -26,8 +26,9 @@ function ForgotPassword() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen w-screen bg-gradient-to-b from-slate-50 to-slate-100 font-sans m-0 overflow-y-auto antialiased">
-      <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.02)] w-full max-w-[420px] text-center border border-slate-200/60 my-auto mx-4 animate-fade-in-up">
+    <div className="min-h-screen w-full overflow-y-auto bg-gradient-to-b from-slate-50 to-slate-100 font-sans antialiased">
+      <div className="flex justify-center px-4 py-8 sm:py-10">
+        <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.02)] w-full max-w-[420px] text-center border border-slate-200/60 animate-fade-in-up">
         <FormBrandHeader
           title="Mot de passe oublié"
           subtitle="Entrez votre e-mail. Nous vous enverrons un code à 6 chiffres pour réinitialiser votre mot de passe."
@@ -70,6 +71,7 @@ function ForgotPassword() {
             <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-0.5" />
             Retour à la connexion
           </Link>
+        </div>
         </div>
       </div>
     </div>

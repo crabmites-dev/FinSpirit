@@ -36,8 +36,9 @@ function Signin() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen w-screen bg-gradient-to-b from-slate-50 to-slate-100 font-sans m-0 overflow-y-auto antialiased">
-      <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.02)] w-full max-w-[420px] text-center border border-slate-200/60 my-auto mx-4 animate-fade-in-up">
+    <div className="min-h-screen w-full overflow-y-auto bg-gradient-to-b from-slate-50 to-slate-100 font-sans antialiased">
+      <div className="flex justify-center px-4 py-8 sm:py-10">
+        <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.02)] w-full max-w-[420px] text-center border border-slate-200/60 animate-fade-in-up">
         <FormBrandHeader
           title="Connexion"
           subtitle="Ravi de vous revoir ! Connectez-vous à votre espace."
@@ -46,7 +47,7 @@ function Signin() {
         <form onSubmit={handleSubmit} className="text-left space-y-4">
           <div className="form-control space-y-2">
             <label className="text-slate-700 text-xs font-bold uppercase tracking-wider pl-0.5 mb-2">Adresse e-mail</label>
-            <div className="flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus-within:border-slate-600 focus-within:bg-white focus-within:ring-4 focus-within:ring-indigo-600/10 transition-all duration-200">
+            <div className="flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus-within:border-indigo-600 focus-within:bg-white focus-within:ring-4 focus-within:ring-indigo-600 transition-all duration-200">
               <Mail className="text-slate-400 w-4 h-4" />
               <input
                 type="email"
@@ -92,6 +93,7 @@ function Signin() {
             S'inscrire
           </Link>
         </p>
+        </div>
       </div>
     </div>
   );
