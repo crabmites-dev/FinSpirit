@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { useToast } from './ToastContext.jsx';
 import FinSpiritLogo from './FinSpiritLogo.jsx';
+import AppFooter from './AppFooter.jsx';
 import { useCurrentUser } from './useCurrentUser.js';
 import NotificationPanel from './NotificationPanel.jsx';
 import { CHART_MARGIN, CHART_Y_AXIS_PROPS } from './formatUtils.js';
@@ -743,6 +744,7 @@ export default function Rapports() {
             </>
           )}
 
+          <AppFooter />
         </main>
       </div>
     </div>

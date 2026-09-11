@@ -12,6 +12,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useToast } from './ToastContext.jsx';
 import FinSpiritLogo from './FinSpiritLogo.jsx';
+import AppFooter from './AppFooter.jsx';
 import { useCurrentUser } from './useCurrentUser.js';
 import NotificationPanel from './NotificationPanel.jsx';
 
@@ -660,6 +661,7 @@ function Echeances() {
               )}
             </div>
           </div>
+          <AppFooter />
         </main>
       </div>
 

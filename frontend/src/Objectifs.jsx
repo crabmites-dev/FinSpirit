@@ -13,6 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import { useToast } from './ToastContext.jsx';
 import { useCurrentUser } from './useCurrentUser.js';
 import FinSpiritLogo from './FinSpiritLogo.jsx';
+import AppFooter from './AppFooter.jsx';
 import NotificationPanel from './NotificationPanel.jsx';
 
 // ── Utilitaires ──────────────────────────────────────────────────
@@ -510,6 +511,7 @@ function Objectifs() {
               ))}
             </div>
           )}
+          <AppFooter />
         </main>
       </div>
 

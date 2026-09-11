@@ -25,7 +25,7 @@ const buildResetCodeEmail = (code) => `
 <div style="background-color: #f4f6fa; padding: 40px 20px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
   <div style="max-width: 460px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; border: 1px solid #e2e8f0; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.03);">
     <div style="padding: 40px 32px 24px; text-align: center;">
-      <h1 style="color: #0f172a; font-size: 26px; font-weight: 700; margin: 0;">FinSpirit</h1>
+      <h1 style="color: #0f172a; font-size: 26px; font-weight: 700; margin: 0;">CapBudget</h1>
       <p style="color: #64748b; font-size: 14px; margin: 8px 0 0;">Réinitialisation de mot de passe</p>
     </div>
     <div style="padding: 0 32px 32px; color: #334155; font-size: 15px; line-height: 1.6;">
@@ -38,7 +38,7 @@ const buildResetCodeEmail = (code) => `
       </div>
       <p style="font-size: 13px; color: #94a3b8;">Si vous n'êtes pas à l'origine de cette demande, ignorez cet e-mail.</p>
       <p style="font-size: 14px; margin-top: 28px; border-top: 1px solid #f1f5f9; padding-top: 20px; color: #64748b;">
-        Bien cordialement,<br><strong style="color: #0f172a;">L'équipe FinSpirit</strong>
+        Bien cordialement,<br><strong style="color: #0f172a;">L'équipe CapBudget</strong>
       </p>
     </div>
   </div>
@@ -83,15 +83,7 @@ export const register = async (req, res) => {
         const token = generateToken(userId)
         res.cookie('token', token, cookieOption)
 
-        return res.status(201).json({
-            message: 'Utilisateur créé avec succès !',
-            token,
-            user: {
-                id: userId,
-                username: newUser.rows[0].username,
-                email: newUser.rows[0].email
-            }
-        })
+        return res.status(201).json({ message: 'Utilisateur créé avec succès !' })
     } catch (error) {
         await client.query('ROLLBACK')
         console.error('Erreur inscription:', error)
@@ -141,7 +133,6 @@ export const login = async (req, res) => {
 
         return res.status(200).json({
             message: 'Connexion réussie',
-            token,
             user: {
                 id: user.id,
                 username: user.username,
@@ -199,9 +190,9 @@ export const forgotPassword = async (req, res) => {
         )
 
         await transporter.sendMail({
-            from: `"FinSpirit" <${process.env.EMAIL_USER}>`,
+            from: process.env.EMAIL_USER,
             to: email,
-            subject: 'Votre code de réinitialisation FinSpirit',
+            subject: 'Votre code de réinitialisation CapBudget',
             html: buildResetCodeEmail(code),
         })
 
@@ -221,6 +212,7 @@ export const resetPassword = async (req, res) => {
 
     try {
         const userResult = await pool.query('SELECT id FROM users WHERE email = $1', [email])
+
         if (userResult.rows.length === 0) {
             return res.status(400).json({ message: 'Code invalide ou expiré' })
         }
@@ -239,14 +231,17 @@ export const resetPassword = async (req, res) => {
         }
 
         const resetRow = codeResult.rows[0]
-        const isValid = await bcrypt.compare(String(code).trim(), resetRow.code_hash)
+
+        const isValid = await bcrypt.compare(String(code).trim(), resetRow.code_hash)   
 
         if (!isValid) {
             return res.status(400).json({ message: 'Code incorrect. Vérifiez et réessayez.' })
         }
 
         const hashedPassword = await bcrypt.hash(newPassword, 10)
+
         await pool.query('UPDATE users SET password = $1 WHERE id = $2', [hashedPassword, userId])
+        
         await pool.query('DELETE FROM password_reset_codes WHERE user_id = $1', [userId])
 
         return res.status(200).json({ message: 'Mot de passe réinitialisé avec succès' })

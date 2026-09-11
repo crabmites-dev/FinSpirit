@@ -16,6 +16,7 @@ import { useNavigate } from 'react-router-dom';
 import { useCurrentUser } from './useCurrentUser.js';
 import NotificationPanel from './NotificationPanel.jsx';
 import { formatCompact, CHART_MARGIN, CHART_Y_AXIS_PROPS } from './formatUtils.js';
+import AppFooter from './AppFooter.jsx';
 
 // ── Utilitaires ──────────────────────────────────────────────────
 const getGreeting = () => {
@@ -747,6 +748,7 @@ function Transactions() {
               </div>
             )}
           </div>
+          <AppFooter />
         </main>
       </div>
     </div>

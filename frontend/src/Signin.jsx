@@ -4,6 +4,7 @@ import api from './api.js';
 import { Link, useNavigate } from 'react-router-dom';
 import { useToast } from './ToastContext.jsx';
 import { FormBrandHeader } from './FinSpiritLogo.jsx';
+import AppFooter from './AppFooter.jsx';
 import PasswordInput from './PasswordInput.jsx';
 
 function Signin() {
@@ -95,6 +96,7 @@ function Signin() {
         </p>
         </div>
       </div>
+      <AppFooter className="pb-6" />
     </div>
   );
 }

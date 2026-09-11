@@ -10,6 +10,7 @@ import PastMonthsSection from './PastMonthsSection.jsx';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from './ToastContext.jsx';
 import FinSpiritLogo from './FinSpiritLogo.jsx';
+import AppFooter from './AppFooter.jsx';
 import { useCurrentUser } from './useCurrentUser.js';
 import NotificationPanel from './NotificationPanel.jsx';
 
@@ -464,6 +465,7 @@ function Budget() {
             title="Historique et respect des budgets passés"
             subtitle="Analysez la maîtrise de vos enveloppes budgétaires au fil des mois précédents"
           />
+          <AppFooter />
         </main>
       </div>
 
