@@ -9,7 +9,7 @@ export default function AppFooter({ className = '' }) {
 
   return (
     <footer className={`mt-auto pt-8 pb-4 text-center ${className}`}>
-      <p className="text-xs text-slate-400 font-medium leading-relaxed">
+      <p className="text-xs text-slate-400 font-small leading-relaxed">
         <span>© {year} FinSpirit. Tous droits réservés.</span>
         {' '}
         {FOOTER_LINKS.map((link, index) => (

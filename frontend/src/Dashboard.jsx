@@ -609,7 +609,7 @@ function Dashboard() {
                         </td>
                         <td className="py-3.5 text-right pr-2">
                           <button onClick={() => handleDelete(t.id)}
-                            className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-slate-300 hover:text-rose-500 hover:bg-rose-50 transition-all cursor-pointer">
+                            className=" p-1.5 rounded-lg text-slate-300 hover:text-rose-500 hover:bg-rose-50 transition-all cursor-pointer">
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
                         </td>
@@ -648,7 +648,7 @@ function Dashboard() {
               </div>
             )}
           </div>
-
+            
           <AppFooter />
         </main>
 
