@@ -8,7 +8,7 @@ export default function AppFooter({ className = '' }) {
   const year = new Date().getFullYear();
 
   return (
-    <footer className={`mt-auto pt-8 pb-4 text-center ${className}`}>
+    <footer className={`mt-auto pt-6 pb-4 text-center border-t border-slate-200/70 ${className}`}>
       <p className="text-xs text-slate-400 font-small leading-relaxed">
         <span>© {year} FinSpirit. Tous droits réservés.</span>
         {' '}
