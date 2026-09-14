@@ -63,13 +63,6 @@ L'application est pensée pour un usage en **FCFA** et propose une interface mod
 - Date d'échéance, fréquence, statut payé / non payé
 - Rappels activables
 
-### UX / UI
-- Design moderne avec **Tailwind CSS 4** et **DaisyUI**
-- Toasts de notification globaux
-- Logo **FinSpirit** personnalisé
-- Champ mot de passe avec bouton afficher / masquer
-- Optimisation mobile (pas de zoom intempestif sur les champs de formulaire iOS)
-
 ---
 
 ## Stack technique
@@ -107,40 +100,7 @@ L'application est pensée pour un usage en **FCFA** et propose une interface mod
 
 ---
 
-## Structure du projet
 
-```
-FinSpirit/
-├── backend/
-│   ├── config/
-│   │   ├── db.js           # Connexion PostgreSQL (Neon)
-│   │   ├── schema.sql      # Schéma SQL des tables
-│   │   ├── initDb.js       # Création initiale du schéma
-│   │   ├── migrate.js      # Migrations automatiques
-│   │   ├── seed.js         # Données d'exemple par utilisateur
-│   │   └── mail.js         # Configuration Nodemailer
-│   ├── controllers/        # Logique métier (auth, transactions, budgets…)
-│   ├── middleware/
-│   │   └── authMiddleware.js
-│   ├── routes/             # Routes Express
-│   ├── server.js           # Point d'entrée API
-│   ├── Dockerfile
-│   └── package.json
-├── frontend/
-│   ├── src/
-│   │   ├── App.jsx         # Routes React
-│   │   ├── Dashboard.jsx
-│   │   ├── Revenus.jsx / Depenses.jsx / Transaction.jsx
-│   │   ├── Budget.jsx / Objectifs.jsx / Echeance.jsx
-│   │   ├── Signin.jsx / Signup.jsx
-│   │   ├── ForgotPassword.jsx / ResetPassword.jsx
-│   │   ├── ToastContext.jsx / FinSpiritLogo.jsx / PasswordInput.jsx
-│   │   └── index.css
-│   ├── Dockerfile
-│   └── package.json
-├── docker-compose.yml
-├── .gitignore
-└── README.md
 ```
 
 ---
@@ -160,8 +120,8 @@ FinSpirit/
 ### 1. Cloner le dépôt
 
 ```bash
-git clone https://github.com/crabmites-dev/capBudget.git
-cd capBudget
+git clone https://github.com/crabmites-dev/FinSpirit.git
+cd FinSpirit
 ```
 
 ### 2. Backend
@@ -187,29 +147,6 @@ Ouvrir **http://localhost:5173** dans le navigateur.
 
 ---
 
-## Variables d'environnement
-
-Créer le fichier `backend/.env` (ne **jamais** le committer sur Git) :
-
-```env
-# ── Neon PostgreSQL ──────────────────────────────────────────────
-# Créer un projet sur https://neon.tech
-# Copier la connection string (Connection details → Connection string)
-DATABASE_URL=postgresql://USER:PASSWORD@HOST/DBNAME?sslmode=require
-
-# ── JWT ──────────────────────────────────────────────────────────
-JWT_SECRET=votre_cle_secrete_tres_longue_et_aleatoire
-
-# ── Serveur ──────────────────────────────────────────────────────
-PORT=5000
-NODE_ENV=development
-
-# ── E-mail (mot de passe oublié — OTP) ───────────────────────────
-EMAIL_USER=votre.email@gmail.com
-EMAIL_PASS=mot_de_passe_application_gmail
-```
-
-> **Gmail :** activer la validation en 2 étapes, puis générer un [mot de passe d'application](https://myaccount.google.com/apppasswords).
 
 ---
 
