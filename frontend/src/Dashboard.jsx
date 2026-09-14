@@ -321,7 +321,7 @@ function Dashboard() {
               { label: "Vue d'ensemble", icon: <LayoutDashboard className="w-4 h-4" />, path: '/dashboard' },
               { label: 'Revenus', icon: <CircleDollarSign className="w-4 h-4" />, path: '/revenu' },
               { label: 'Depenses', icon: <CreditCard className="w-4 h-4" />, path: '/depense' },
-              { label: 'Budget', icon: <Landmark className="w-4 h-4" />, path: '/budget' },
+              { label: 'Budgets', icon: <Landmark className="w-4 h-4" />, path: '/budget' },
               { label: 'Objectifs', icon: <Trophy className="w-4 h-4" />, path: '/objectifs' },
               { label: 'Echéances', icon: <CalendarClock className="w-4 h-4" />, path: '/echeances' },
               { label: 'Rapports & Bilan', icon: <FileText className="w-4 h-4" />, path: '/rapports' },

@@ -319,7 +319,7 @@ function Transactions() {
               { label:'Transactions',   icon:<ReceiptEuro className="w-4 h-4" />,     path:'/transaction' },
               { label:'Revenus',        icon:<CircleDollarSign className="w-4 h-4" />,path:'/revenu' },
               { label:'Dépenses',       icon:<CreditCard className="w-4 h-4" />,      path:'/depense' },
-              { label:'Budget',         icon:<Target className="w-4 h-4" />,           path:'/budget' },
+              { label:'Budgets',         icon:<Target className="w-4 h-4" />,           path:'/budget' },
               { label:'Objectifs',      icon:<Trophy className="w-4 h-4" />,           path:'/objectifs' },
               { label:'Échéances',      icon:<Calendar className="w-4 h-4" />,         path:'/echeances' },
               { label:'Rapports & Bilan', icon:<FileText className="w-4 h-4" />,       path:'/rapports' },
