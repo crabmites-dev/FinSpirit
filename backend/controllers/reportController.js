@@ -1,5 +1,6 @@
 import pool from '../config/db.js';
-import transporter from '../config/mail.js';
+import { sendEmail, formatMailError, isMailConfigured } from '../config/mail.js';
+import { createNotification } from './notificationController.js';
 import { buildMonthlyReportEmail } from '../templates/monthlyReportEmail.js';
 
 const MONTH_NAMES_FR = [
@@ -346,17 +347,11 @@ export async function sendMonthlyEmailToUser(userId, year, month) {
     frontendUrl
   });
 
-  // 4. Vérifier les identifiants et envoyer via nodemailer
-  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-    throw new Error('Configuration e-mail manquante : EMAIL_USER ou EMAIL_PASS n\'est pas défini sur le serveur.');
-  }
-
   const mailSubject = `FinSpirit — Relevé financier de ${reportData.monthName} ${reportData.year}`;
-  await transporter.sendMail({
-    from: `"FinSpirit" <${process.env.EMAIL_USER}>`,
+  await sendEmail({
     to: user.email,
     subject: mailSubject,
-    html: htmlContent
+    html: htmlContent,
   });
 
   // 5. Enregistrer dans la table d'historique des envois (idempotent)
@@ -379,34 +374,57 @@ export async function sendMonthlyEmailToUser(userId, year, month) {
  */
 export const sendMonthlyEmail = async (req, res) => {
   const userId = req.user?.id;
+  const userEmail = req.user?.email;
+
   if (!userId) {
     return res.status(401).json({ message: 'Utilisateur non authentifié' });
   }
 
-  const now = new Date();
+  if (!userEmail) {
+    return res.status(400).json({ message: 'Aucune adresse e-mail associée à votre compte.' });
+  }
 
-  // Accepte le mois et l'année depuis le body (POST) ou les query params (GET/fallback)
+  if (!isMailConfigured()) {
+    return res.status(503).json({
+      message: 'Service e-mail non configuré sur le serveur. Ajoutez RESEND_API_KEY (production) ou EMAIL_USER/EMAIL_PASS.',
+    });
+  }
+
+  const now = new Date();
   const targetYear = req.body?.year ?? req.query?.year;
   const targetMonth = req.body?.month ?? req.query?.month;
   let year = parseInt(targetYear, 10);
   let month = parseInt(targetMonth, 10);
 
   if (isNaN(year) || isNaN(month) || month < 1 || month > 12) {
-    // Par défaut mois actuel s'il est spécifié, ou mois précédent
     year = now.getFullYear();
     month = now.getMonth() + 1;
   }
 
-  try {
-    const result = await sendMonthlyEmailToUser(userId, year, month);
-    return res.json({
-      success: true,
-      message: `Bilan de ${result.monthName} ${result.year} envoyé avec succès à ${result.email} !`
+  const monthName = MONTH_NAMES_FR[month - 1];
+
+  // Réponse immédiate : évite le timeout HTTP en production (Render, Railway, etc.)
+  res.status(202).json({
+    success: true,
+    message: `Votre bilan de ${monthName} ${year} est en cours d'envoi à ${userEmail}. Vous le recevrez sous peu.`,
+  });
+
+  sendMonthlyEmailToUser(userId, year, month)
+    .then(async (result) => {
+      await createNotification(
+        userId,
+        'Bilan envoyé par e-mail',
+        `Le relevé de ${result.monthName} ${result.year} a été envoyé à ${result.email}.`,
+        'success',
+      );
+    })
+    .catch(async (error) => {
+      console.error('Envoi du rapport en arrière-plan échoué:', error);
+      await createNotification(
+        userId,
+        'Échec de l\'envoi du bilan',
+        formatMailError(error),
+        'error',
+      );
     });
-  } catch (error) {
-    console.error('Erreur lors de l\'envoi du rapport mensuel :', error);
-    return res.status(500).json({
-      message: error.message || 'Erreur lors de l\'envoi du rapport par email'
-    });
-  }
 };

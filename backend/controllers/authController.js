@@ -1,7 +1,7 @@
 import pool from '../config/db.js'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
-import  transporter  from '../config/mail.js'
+import { sendEmail, formatMailError } from '../config/mail.js'
 import dotenv from 'dotenv'
 import { seedData, deleteSampleData as removeSampleData, hasSampleData } from '../config/seed.js'
 
@@ -189,17 +189,16 @@ export const forgotPassword = async (req, res) => {
             [userId, email, codeHash, expiresAt]
         )
 
-        await transporter.sendMail({
-            from: process.env.EMAIL_USER,
+        await sendEmail({
             to: email,
-            subject: 'Votre code de réinitialisation CapBudget',
+            subject: 'Votre code de réinitialisation FinSpirit',
             html: buildResetCodeEmail(code),
         })
 
         return res.status(200).json({ message: 'Si ce compte existe, un code a été envoyé par e-mail.' })
     } catch (error) {
         console.error('Une erreur est survenue', error)
-        return res.status(500).json({ message: 'Erreur serveur' })
+        return res.status(500).json({ message: formatMailError(error) })
     }
 }
 

@@ -10,6 +10,7 @@ import echeanceRoutes from './routes/echeanceRoute.js'
 import notificationRoutes from './routes/notificationRoute.js'
 import reportRoutes from './routes/reportRoute.js'
 import { initMonthlyReportScheduler } from './services/monthlyReportScheduler.js'
+import { verifyMailConnection } from './config/mail.js'
 
 import pool from './config/db.js'
 
@@ -88,6 +89,7 @@ const PORT = process.env.PORT || 5000
 
 app.listen(PORT, async () => {
     await ensureDatabaseReady()
+    await verifyMailConnection()
     initMonthlyReportScheduler()
     console.log(`Serveur lancé sur le port ${PORT}`)
 })

@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import api from './api.js';
+import api, { getApiErrorMessage } from './api.js';
 import {
   PieChart, Pie, Cell, ResponsiveContainer, Tooltip,
   AreaChart, Area, CartesianGrid, XAxis, YAxis
@@ -150,12 +150,17 @@ export default function Rapports() {
     try {
       const res = await api.post('/reports/send-email', {
         year: selectedYear,
-        month: selectedMonth
+        month: selectedMonth,
+      }, {
+        timeout: 90000,
       });
-      showToast(res.data.message || 'Rapport envoyé avec succès à votre adresse email !', 'success');
+      showToast(
+        res.data.message || 'Votre bilan est en cours d\'envoi. Consultez vos e-mails et vos notifications.',
+        'success',
+      );
     } catch (err) {
       console.error('Erreur envoi email:', err);
-      showToast(err.response?.data?.message || 'Erreur lors de l\'envoi de l\'e-mail.', 'error');
+      showToast(getApiErrorMessage(err, 'Erreur lors de l\'envoi de l\'e-mail.'), 'error');
     } finally {
       setSendingEmail(false);
     }
