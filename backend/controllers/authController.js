@@ -83,7 +83,15 @@ export const register = async (req, res) => {
         const token = generateToken(userId)
         res.cookie('token', token, cookieOption)
 
-        return res.status(201).json({ message: 'Utilisateur créé avec succès !' })
+        return res.status(201).json({
+            message: 'Utilisateur créé avec succès !',
+            token,
+            user: {
+                id: userId,
+                username,
+                email
+            }
+        })
     } catch (error) {
         await client.query('ROLLBACK')
         console.error('Erreur inscription:', error)
@@ -133,6 +141,7 @@ export const login = async (req, res) => {
 
         return res.status(200).json({
             message: 'Connexion réussie',
+            token,
             user: {
                 id: user.id,
                 username: user.username,
