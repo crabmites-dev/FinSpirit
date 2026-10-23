@@ -10,7 +10,7 @@ export default function NotificationPanel() {
   const [isOpen, setIsOpen] = useState(false);
   const panelRef = useRef(null);
 
-  // Fermer le panel quand on clique en dehors
+  //Fermer le panel quand on clique en dehors
   useEffect(() => {
     function handleClickOutside(event) {
       if (panelRef.current && !panelRef.current.contains(event.target)) {
