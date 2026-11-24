@@ -170,24 +170,6 @@ La base reste sur **Neon** (pas de PostgreSQL local dans Docker).
 
 ---
 
-## Pages de l'application
-
-| Route              | Page                    | Accès        |
-|--------------------|-------------------------|--------------|
-| `/login`           | Connexion               | Public       |
-| `/register`        | Inscription             | Public       |
-| `/forgotPassword`  | Demande de code OTP     | Public       |
-| `/resetPassword`   | Réinitialisation MDP    | Public       |
-| `/dashboard`       | Tableau de bord         | Connecté     |
-| `/revenu`          | Revenus                 | Connecté     |
-| `/depense`         | Dépenses                | Connecté     |
-| `/transaction`     | Toutes les transactions | Connecté     |
-| `/budget`          | Budgets                 | Connecté     |
-| `/objectifs`       | Objectifs d'épargne     | Connecté     |
-| `/echeances`       | Échéances / factures    | Connecté     |
-
----
-
 ## API REST
 
 Base URL : `http://localhost:5000/api`
