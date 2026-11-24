@@ -6,26 +6,6 @@ L'application est pensée pour un usage en **FCFA** et propose une interface mod
 
 ---
 
-## Sommaire 
-
-- [Fonctionnalités](#fonctionnalités)
-- [Stack technique](#stack-technique)
-- [Architecture](#architecture)
-- [Structure du projet](#structure-du-projet)
-- [Prérequis](#prérequis)
-- [Installation locale](#installation-locale)
-- [Variables d'environnement](#variables-denvironnement)
-- [Base de données (Neon PostgreSQL)](#base-de-données-neon-postgresql)
-- [Lancement avec Docker](#lancement-avec-docker)
-- [Pages de l'application](#pages-de-lapplication)
-- [API REST](#api-rest)
-- [Authentification & sécurité](#authentification--sécurité)
-- [Données d'exemple](#données-dexemple)
-- [Scripts disponibles](#scripts-disponibles)
-- [Auteur](#auteur)
-
----
-
 ## Fonctionnalités
 
 ### Authentification
